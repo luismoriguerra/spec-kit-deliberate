@@ -2,7 +2,7 @@
 
 **Think before you spec. Record what you decided.**
 
-`deliberate` adds the two missing lifecycle phases around Spec Kit's
+`deliberate` adds the three missing lifecycle phases around Spec Kit's
 specify → clarify → plan → tasks → implement flow:
 
 - **explore** (`speckit.deliberate.explore`) — a read-only thinking partner:
@@ -22,7 +22,7 @@ specify → clarify → plan → tasks → implement flow:
 
 ## Why
 
-Spec Kit drives **spec → code** (forward). Two gaps stay open:
+Spec Kit drives **spec → code** (forward). Three gaps stay open:
 
 | Without it | With it |
 |---|---|
@@ -31,6 +31,7 @@ Spec Kit drives **spec → code** (forward). Two gaps stay open:
 | Old choices get silently rewritten | supersede-not-delete keeps history: new DR + updated ledger + old body intact |
 | Feature call vs platform rule is a judgment call every time | the DR-vs-ADR firewall routes platform scope to your ADR workflow |
 | Analysis findings rot in reports | record materializes them as DRs with tasks |
+| No shared view of decided vs open vs next | recap converges the tree into a state line + five-section brief |
 
 ## How it works
 
