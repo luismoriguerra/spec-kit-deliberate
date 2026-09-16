@@ -1,0 +1,41 @@
+# Copyright (c) 2026 luismoriguerra and contributors.
+# SPDX-License-Identifier: MIT
+# Every workflow/script file touched by a PR must carry an SPDX identifier.
+# Markdown extension content is exempt (headers would pollute rendered skills).
+
+name: License Header Check
+
+on:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  license-header-check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+
+      - name: Verify SPDX headers on workflows and scripts
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+        run: |
+          set -uo pipefail
+          fail=0
+          while IFS= read -r f; do
+            [ -n "$f" ] || continue
+            case "$f" in
+              *.yml|*.yaml|*.sh) ;;
+              *) continue ;;
+            esac
+            [ -f "$f" ] || continue
+            if ! grep -q 'SPDX-License-Identifier: MIT' "$f"; then
+              echo "  ✖ missing SPDX header: $f"
+              fail=1
+            fi
+          done < <(git diff --name-only --diff-filter=ACM "$BASE_SHA" "$HEAD_SHA")
+          [ "$fail" -eq 0 ] && echo "  ✓ SPDX headers present"

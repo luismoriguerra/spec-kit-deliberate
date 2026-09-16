@@ -1,0 +1,139 @@
+# Copyright (c) 2026 luismoriguerra and contributors.
+# SPDX-License-Identifier: MIT
+# Static gates for this Spec Kit extension: manifest validity, portable
+# command references, install-safe links, generic-core leak-lint, YAML lint,
+# and the version-bump rule for commands/templates changes.
+
+name: Extension Validate
+
+on:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+
+      - name: Validate extension.yml manifest
+        run: |
+          python3 -m pip install --quiet pyyaml
+          python3 - <<'PY'
+          import re, sys, yaml
+          from pathlib import Path
+          root = Path(".")
+          m = yaml.safe_load(open(root / "extension.yml"))
+          problems = []
+          def bad(msg):
+              problems.append(msg)
+          if m.get("schema_version") != "1.0":
+              bad("schema_version must be '1.0'")
+          ext = m.get("extension", {})
+          if not re.fullmatch(r"[a-z0-9-]+", ext.get("id", "")):
+              bad(f"extension.id invalid: {ext.get('id')!r}")
+          if not re.fullmatch(r"\d+\.\d+\.\d+", str(ext.get("version", ""))):
+              bad(f"extension.version must be SemVer: {ext.get('version')!r}")
+          for f in ("name", "description", "repository", "license"):
+              if not ext.get(f):
+                  bad(f"extension.{f} is required")
+          if len(ext.get("description", "")) > 100:
+              bad("extension.description must be under 100 chars")
+          req = m.get("requires", {})
+          if not req.get("speckit_version"):
+              bad("requires.speckit_version is required")
+          provides = m.get("provides", {})
+          cmds = provides.get("commands", [])
+          if not cmds:
+              bad("provides.commands must list at least one command")
+          for c in cmds:
+              name = c.get("name", "")
+              if not re.fullmatch(r"speckit\.[a-z0-9-]+\.[a-z0-9-]+", name):
+                  bad(f"command name invalid: {name!r}")
+              f = c.get("file", "")
+              if not f or (root / f).is_file() is False:
+                  bad(f"command file missing: {name} -> {f}")
+          for t in provides.get("templates", []):
+              if not re.fullmatch(r"[a-z0-9-]+", t.get("name", "")):
+                  bad(f"template name invalid: {t.get('name')!r}")
+              if "strategy" in t:
+                  bad(f"template must not set strategy (preset-only): {t.get('name')}")
+              if not (root / t.get("file", "")).is_file():
+                  bad(f"template file missing: {t.get('file')}")
+          for c in provides.get("config", []):
+              if not (root / c.get("template", "")).is_file():
+                  bad(f"config template missing: {c.get('template')}")
+          if problems:
+              print("\n".join(f"  ✖ {p}" for p in problems))
+              sys.exit(1)
+          print("  ✓ manifest valid")
+          PY
+
+      - name: Lint portable command references (tokens only)
+        run: |
+          set -uo pipefail
+          # Command bodies must reference siblings via __SPECKIT_COMMAND_*__
+          # tokens — never literal speckit.* spellings (they break agents
+          # with different invocation syntax).
+          if grep -rn 'speckit\.' commands/ | grep -v '__SPECKIT_COMMAND_'; then
+            echo "  ✖ literal speckit.* reference in commands/ (use __SPECKIT_COMMAND_*__ tokens)"
+            exit 1
+          fi
+          echo "  ✓ command references are tokenized"
+
+      - name: Lint install-safe links in commands
+        run: |
+          set -uo pipefail
+          # Rendered skills are linted by consumers; repo-relative links
+          # break there. Reference install-path docs as plain code spans.
+          if grep -rn -e '](docs/' -e '](\.\./' commands/; then
+            echo "  ✖ repo-relative markdown link in commands/"
+            exit 1
+          fi
+          echo "  ✓ no repo-relative links in commands/"
+
+      - name: Leak-lint generic core
+        run: |
+          set -uo pipefail
+          fail=0
+          # Strict set: these paths must never name the fictional example
+          # platform. The worked overlay lives in exactly one file; the
+          # generic core stays project-agnostic.
+          if grep -rniE 'acme|snapbus|policygraph|photo-collective|design-review|adr-writer' \
+              commands/ templates/ extension.yml config-template.yml; then
+            echo "  ✖ project-specific term in generic core"
+            fail=1
+          fi
+          # Docs/README may only mention these inside the worked example.
+          if grep -rniE 'acme|snapbus|policygraph|photo-collective|design-review|adr-writer' \
+              README.md CONTRIBUTING.md docs/ --exclude=platform-overlay-example.md; then
+            echo "  ✖ project-specific term outside docs/platform-overlay-example.md"
+            fail=1
+          fi
+          [ "$fail" -eq 0 ] && echo "  ✓ generic core is leak-free"
+
+      - name: YAML lint
+        run: |
+          python3 -m pip install --quiet yamllint
+          python3 -m yamllint -d '{extends: default, rules: {line-length: {max: 120}, document-start: disable}}' \
+            extension.yml config-template.yml .github/workflows/
+
+      - name: Version guard (commands/templates changes need a bump)
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+        run: |
+          set -uo pipefail
+          changed="$(git diff --name-only "$BASE_SHA" "$HEAD_SHA")"
+          echo "$changed"
+          if echo "$changed" | grep -qE '^(commands|templates)/'; then
+            echo "$changed" | grep -qx 'extension.yml' \
+              || { echo "  ✖ commands/templates changed without extension.yml version bump"; exit 1; }
+            echo "$changed" | grep -qx 'CHANGELOG.md' \
+              || { echo "  ✖ commands/templates changed without CHANGELOG.md entry"; exit 1; }
+          fi
+          echo "  ✓ version guard passed"

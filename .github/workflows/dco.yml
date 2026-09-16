@@ -1,0 +1,47 @@
+# Copyright (c) 2026 luismoriguerra and contributors.
+# SPDX-License-Identifier: MIT
+# Enforces the Developer Certificate of Origin: every commit in a pull
+# request MUST carry a valid `Signed-off-by` trailer.
+
+name: DCO
+
+on:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  dco-check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+
+      - name: Verify Signed-off-by on every commit
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+        run: |
+          set -euo pipefail
+          trailer_re='^Signed-off-by: .+ <[^@[:space:]]+@[^>[:space:]]+>'
+          failed=0
+          while IFS= read -r sha; do
+            [ -n "$sha" ] || continue
+            # Skip merge commits (2+ parents) — they carry no authored change.
+            parents="$(git rev-list --parents -n 1 "$sha" | wc -w)"
+            if [ "$parents" -gt 2 ]; then
+              continue
+            fi
+            if ! git log -1 --format='%B' "$sha" | grep -qiE "$trailer_re"; then
+              subject="$(git log -1 --format='%h %s' "$sha")"
+              echo "  ✖ missing Signed-off-by: $subject"
+              failed=1
+            fi
+          done < <(git rev-list "$BASE_SHA..$HEAD_SHA")
+          if [ "$failed" -ne 0 ]; then
+            echo "All commits must be signed off (git commit -s / git rebase --signoff)."
+            exit 1
+          fi
+          echo "  ✓ DCO sign-off present on every commit"

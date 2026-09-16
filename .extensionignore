@@ -1,0 +1,9 @@
+# Files excluded from the installed copy (.specify/extensions/deliberate/).
+# NOTE: docs/ MUST ship — command bodies reference install-path docs.
+
+.github/
+.gitignore
+tests/
+CONTRIBUTING.md
+SECURITY.md
+CODEOWNERS
