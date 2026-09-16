@@ -16,7 +16,7 @@ held to the same bar as code.
 
 | Change type | Location |
 |---|---|
-| Explore/record behavior | `commands/explore.md`, `commands/record.md` |
+| Explore/record/recap behavior | `commands/explore.md`, `commands/record.md`, `commands/recap.md` |
 | DR template | `templates/decision-record-template.md` |
 | Config surface | `config-template.yml` (+ README sample) |
 | Reference docs | `docs/capture-routing.md`, `docs/ledger.md`, `docs/routing.md`, `docs/template-checklist.md` |

@@ -221,6 +221,7 @@ The summary is optional. Sometimes thinking **is** the deliverable.
 | `__SPECKIT_COMMAND_CLARIFY__` | **Writes** answers into `spec.md` — use after explore |
 | `__SPECKIT_COMMAND_ANALYZE__` | **Read-only** cross-artifact audit with formal report — use for QA, not brainstorming |
 | `__SPECKIT_COMMAND_DELIBERATE_RECORD__` | **Writes** DR files — use after a decision is chosen |
+| `__SPECKIT_COMMAND_DELIBERATE_RECAP__` | **Read-only** convergent status brief — use to summarize decided/open/next |
 
 **Typical flow:**
 
@@ -234,3 +235,4 @@ __SPECKIT_COMMAND_DELIBERATE_EXPLORE__  →  (user decides)  →  clarify / reco
 
 - Capture-routing reference: `.specify/extensions/deliberate/docs/capture-routing.md` — where insights go when the user exits explore
 - `__SPECKIT_COMMAND_DELIBERATE_RECORD__` — after a decision is chosen
+- `__SPECKIT_COMMAND_DELIBERATE_RECAP__` — to converge the tree into a status brief

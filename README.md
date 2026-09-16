@@ -11,9 +11,12 @@ specify → clarify → plan → tasks → implement flow:
 - **record** (`speckit.deliberate.record`) — feature Decision Records (DRs):
   classify scope, allocate `DR-NNN`, scaffold from a template, keep a
   `spec.md` ledger, and supersede (never delete) prior decisions.
+- **recap** (`speckit.deliberate.recap`) — a read-only status brief:
+  state, decided items, open questions with recommendations, draft
+  epic/issue/PR titles, next steps, and an agnostic TL;DR.
 
-**Version:** 0.1.1 · **Requires:** spec-kit ≥ 1.0.0 · **License:** MIT
-**Provides:** 2 commands, 1 template · **Hooks:** none in v1
+**Version:** 0.2.0 · **Requires:** spec-kit ≥ 1.0.0 · **License:** MIT
+**Provides:** 3 commands, 1 template · **Hooks:** none in v1
 
 ---
 
@@ -43,6 +46,10 @@ explore (read-only)  →  (user decides)  →  clarify / record / plan  →  …
    writes the file + ledger row (+ optional task).
 3. Without an active feature, record degrades to a **chat-only proposal**
    instead of writing files — it never creates `specs/` entries itself.
+4. **Recap** converges the tree into a five-section brief — Decided, Open
+   (with Recommended + alternatives), draft epics/issues/PRs, What is next,
+   and an agnostic TL;DR — with a state line (`exploration` / `in-progress`
+   / `done`). Read-only, like explore.
 
 ### The DR contract
 
@@ -59,7 +66,7 @@ The `decisions/` directory has no index — the canonical index is the
 Pre-catalog (from the tagged release asset):
 
 ```bash
-specify extension add deliberate --from https://github.com/luismoriguerra/spec-kit-deliberate/releases/download/v0.1.1/deliberate-v0.1.1.zip
+specify extension add deliberate --from https://github.com/luismoriguerra/spec-kit-deliberate/releases/download/v0.2.0/deliberate-v0.2.0.zip
 # Verify out-of-band: compare sha256sum of the zip with the SHA-256 in the release notes
 ```
 
@@ -76,11 +83,12 @@ Verify:
 
 ```bash
 specify extension list
-# ✓ Deliberate (v0.1.1) — Commands: 2 | Hooks: 0 | Status: Enabled
+# ✓ Deliberate (v0.2.0) — Commands: 3 | Hooks: 0 | Status: Enabled
 ```
 
 On skills-based integrations the commands also appear as agent skills
-(`speckit-deliberate-explore`, `speckit-deliberate-record`).
+(`speckit-deliberate-explore`, `speckit-deliberate-record`,
+`speckit-deliberate-recap`).
 
 Once listed in the community catalog:
 
@@ -100,6 +108,9 @@ explore the tradeoffs for <idea>
 
 # 3. After a decision is chosen — record it with evidence
 record a DR for <question>
+
+# 4. Anytime — converge the tree into a status brief
+recap this feature
 ```
 
 No active feature yet? Record drafts the proposal in chat and tells you to
@@ -111,6 +122,7 @@ run specify first — nothing is written until a feature exists.
 |---|---|---|
 | `speckit.deliberate.explore` | read-only | Thinking partner: options, tradeoffs, risks, capture offers |
 | `speckit.deliberate.record` | read-write | Classify → allocate → draft → confirm → write DR + ledger |
+| `speckit.deliberate.recap` | read-only | Status brief: decided, open + recommendations, epics/PRs, next, TL;DR |
 
 `deliberate-config.yml` (all optional, defaults shown):
 

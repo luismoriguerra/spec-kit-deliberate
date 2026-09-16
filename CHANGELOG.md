@@ -6,6 +6,13 @@ All notable changes to this project are documented here. Format follows
 
 ## [Unreleased]
 
+### Added
+
+- `speckit.deliberate.recap` — read-only convergent status brief: state
+  (`exploration` / `in-progress` / `done`), decided items, open questions with
+  recommended + alternative options, draft epic/issue/PR titles, ordered next
+  steps, and a portable agnostic TL;DR.
+
 ## [0.1.1] - 2026-09-16
 
 ### Changed

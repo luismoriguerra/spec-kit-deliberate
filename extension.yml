@@ -5,7 +5,7 @@ schema_version: "1.0"
 extension:
   id: deliberate
   name: Deliberate
-  version: 0.1.1
+  version: 0.2.0
   description: Read-only exploration plus evidence-backed feature decision records
   author: luismoriguerra
   repository: https://github.com/luismoriguerra/spec-kit-deliberate
@@ -22,6 +22,9 @@ provides:
     - name: speckit.deliberate.record
       file: commands/record.md
       description: Record, supersede, or batch-create feature decision records
+    - name: speckit.deliberate.recap
+      file: commands/recap.md
+      description: Recap decisions, open questions, and next steps for the active feature
   templates:
     - name: decision-record-template
       file: templates/decision-record-template.md
