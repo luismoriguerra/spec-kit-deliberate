@@ -90,11 +90,15 @@ On skills-based integrations the commands also appear as agent skills
 (`speckit-deliberate-explore`, `speckit-deliberate-record`,
 `speckit-deliberate-recap`).
 
-Once listed in the community catalog:
+Once in the official default catalog or your own install-allowed catalog:
 
 ```bash
 specify extension add deliberate
 ```
+
+> Listing in the `community` catalog does NOT enable this: it is
+> discovery-only (`install_allowed: false`). From there the flow stays
+> `specify extension info deliberate` → `specify extension add deliberate --from <candidate-archive-url>`.
 
 ## Adopt
 
