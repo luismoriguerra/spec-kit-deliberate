@@ -248,3 +248,4 @@ Next: link from plan/checklist as needed · run __SPECKIT_COMMAND_ANALYZE__ if a
 - `__SPECKIT_COMMAND_DELIBERATE_EXPLORE__` — read-only brainstorming before a DR is chosen
 - `__SPECKIT_COMMAND_ANALYZE__` — read-only; pair with this command to materialize DRs
 - `__SPECKIT_COMMAND_DELIBERATE_RECAP__` — read-only status brief over the ledger and tasks
+- `__SPECKIT_COMMAND_DELIBERATE_TRIAGE__` — read-only queue feeding this command one decision item at a time
