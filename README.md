@@ -71,9 +71,6 @@ specify extension add deliberate --from https://github.com/luismoriguerra/spec-k
 # Verify out-of-band: compare sha256sum of the zip with the SHA-256 in the release notes
 ```
 
-> While this repo is private, `specify` needs `~/.specify/auth.json` with a
-> GitHub bearer token to download the asset. No auth is needed once public.
-
 Local development install (from a checkout):
 
 ```bash
