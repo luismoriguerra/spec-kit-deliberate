@@ -247,3 +247,4 @@ Next: link from plan/checklist as needed · run __SPECKIT_COMMAND_ANALYZE__ if a
 - Template checklist: `.specify/extensions/deliberate/docs/template-checklist.md` — required sections
 - `__SPECKIT_COMMAND_DELIBERATE_EXPLORE__` — read-only brainstorming before a DR is chosen
 - `__SPECKIT_COMMAND_ANALYZE__` — read-only; pair with this command to materialize DRs
+- `__SPECKIT_COMMAND_DELIBERATE_RECAP__` — read-only status brief over the ledger and tasks

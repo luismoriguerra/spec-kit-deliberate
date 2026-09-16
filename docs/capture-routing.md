@@ -17,6 +17,7 @@ renders them in its own invocation syntax.)
 | Technical approach / research | `speckit.plan` | `plan.md`, `research.md`, `data-model.md`, `contracts/` |
 | Task breakdown | `speckit.tasks` | `tasks.md` |
 | Cross-artifact consistency check | `speckit.analyze` | Report only (then DR/clarify if gaps) |
+| Status brief (decided/open/next) | `speckit.deliberate.recap` | Report only (chat) |
 | Platform-wide rule | Project ADR workflow (see `platform_routing` in `deliberate-config.yml`) | Project ADR log |
 | Application code | `speckit.implement` | Source tree (never from explore directly) |
 
