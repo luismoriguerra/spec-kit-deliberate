@@ -6,6 +6,8 @@ All notable changes to this project are documented here. Format follows
 
 ## [Unreleased]
 
+## [0.3.0] - 2026-09-16
+
 ### Added
 
 - `speckit.deliberate.triage` — read-only uncertainty queue: harvests
