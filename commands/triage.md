@@ -198,12 +198,16 @@ are deliberate-only:
 | `completion` | Acceptance testability, measurable done signals |
 | `placeholders` | TODO markers, unresolved stubs |
 | `decisions` | Proposed / low-confidence DRs, triggered revisits |
-| `execution` | Blocked tasks, failing checklist gates |
+| `execution` | Blocked `Txxx` tasks (dependency or owner missing) |
 | `platform-signal` | Cross-feature scope — listed separately, ADR path, never scored as DR |
 
 Notes:
 
 - Tag auth/privacy items `[nfr/auth-privacy]` but count them under `nfr`.
+- Failing checklist gates are requirements-quality items — categorize by
+  their underlying taxonomy slug (not `execution`) and route to
+  `__SPECKIT_COMMAND_CLARIFY__`, which re-validates
+  `checklists/requirements.md` after every write.
 - An item takes exactly one slug — the one matching its blocker, not every
   topic it touches.
 - `platform-signal` items appear in their own sub-list with the ADR handoff
@@ -244,15 +248,22 @@ Keep slugs exact — downstream passes match on them.
 
 ### 3. Resolution queue
 
-Ordered head-first. Each step names its owning command so the user can act.
-One item, one route — never batch-capture:
+Ordered head-first. Each step names its owning command plus a paste-ready
+focus hint for that command's `$ARGUMENTS` — triage picks the category,
+the owning command asks the questions. One item, one route — never
+batch-capture:
 
 ```markdown
 ## Resolution queue
 
-1. P0-1 → `__SPECKIT_COMMAND_DELIBERATE_RECORD__` (close DR-009 with authority + read path)
-2. P0-2 → `__SPECKIT_COMMAND_CLARIFY__` (scope call, writes spec.md)
+1. P0-1 → `__SPECKIT_COMMAND_DELIBERATE_RECORD__` — focus: `close DR-009, nfr/auth-privacy (P0-1, spec.md:44)`
+2. P0-2 → `__SPECKIT_COMMAND_CLARIFY__` — focus: `scope, MVP boundary (P0-2, spec.md:12)`
 ```
+
+Focus-hint shape: `<slug>[ /<sub-area>], <short question> (<board-id>, <source>)`.
+`__SPECKIT_COMMAND_CLARIFY__` honors its input as prioritization context,
+so pasting the hint continues clarifying by category without triage owning
+a question loop.
 
 Scope filters (`category:<slug>`, `impact:P0`) narrow all three sections to
 the filter and add one line with the remaining totals
@@ -267,9 +278,10 @@ End with one route per head item from the capture-routing reference at
 multiple captures in one turn unless asked:
 
 - Spec gap / marker / vague requirement → `__SPECKIT_COMMAND_CLARIFY__`
+- Failing checklist gate → `__SPECKIT_COMMAND_CLARIFY__` (requirements-quality; clarify re-validates after every write)
 - Proposed / low-confidence DR → `__SPECKIT_COMMAND_DELIBERATE_RECORD__`
 - Platform-signal → ADR path from `platform_routing`, or chat report when unconfigured
-- Blocked task / failing gate → `__SPECKIT_COMMAND_PLAN__` / `__SPECKIT_COMMAND_TASKS__`
+- Blocked `Txxx` → `__SPECKIT_COMMAND_PLAN__` / `__SPECKIT_COMMAND_TASKS__`
 - Want alternatives first → `__SPECKIT_COMMAND_DELIBERATE_EXPLORE__`
 - Want the full brief → `__SPECKIT_COMMAND_DELIBERATE_RECAP__`
 
