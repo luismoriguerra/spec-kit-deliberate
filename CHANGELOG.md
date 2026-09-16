@@ -6,12 +6,19 @@ All notable changes to this project are documented here. Format follows
 
 ## [Unreleased]
 
+## [0.2.0] - 2026-09-16
+
 ### Added
 
 - `speckit.deliberate.recap` — read-only convergent status brief: state
   (`exploration` / `in-progress` / `done`), decided items, open questions with
   recommended + alternative options, draft epic/issue/PR titles, ordered next
   steps, and a portable agnostic TL;DR.
+
+### Changed
+
+- README: install docs clarify the `community` catalog is discovery-only
+  (`install_allowed: false`); header and Why table updated for three commands.
 
 ## [0.1.1] - 2026-09-16
 
