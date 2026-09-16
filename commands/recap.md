@@ -101,19 +101,25 @@ Parse `FEATURE_DIR`, `FEATURE_SPEC`, and paths if present. Also read
 
 - `SPEC = $FEATURE_DIR/spec.md`
 - `TASKS = $FEATURE_DIR/tasks.md` (optional)
-- `DECISIONS = $FEATURE_DIR/<decisions_dir>` (`decisions_dir` from config,
-  default `decisions`)
+- `DECISIONS = $FEATURE_DIR/<decisions_dir>` (`decisions_dir` from
+  `deliberate-config.yml`, default `decisions`)
+- `LEDGER_HEADING = <ledger_heading>` from `deliberate-config.yml`
+  (default `### Decision records`)
 
 ---
 
 ## Step 1 — Load (progressive, read-only)
 
-Read only what the brief needs:
+Read only what the brief needs. Resolve `DECISIONS` and `LEDGER_HEADING`
+from Step 0 — never assume `decisions/` or the default heading, or projects
+that customized them will silently report zero DRs. Row statuses follow the
+ledger reference at
+`.specify/extensions/deliberate/docs/ledger.md`.
 
 | Artifact | Extract |
 |---|---|
-| `spec.md` + ledger (`### Decision records`) | FR/SC, ledger rows grouped by Status |
-| `decisions/DR-*.md` | Question, Decision, Confidence, Revisit Trigger |
+| `spec.md` + ledger (`LEDGER_HEADING` from Step 0) | FR/SC, ledger rows grouped by Status |
+| `$DECISIONS/DR-*.md` (`DECISIONS` from Step 0) | Question, Decision, Confidence, Revisit Trigger |
 | `plan.md` / `research.md` | Approach, risks, known unknowns |
 | `tasks.md` | `[x]` vs `[ ]` counts per phase |
 | `checklists/` | Failing or unmet gates |
@@ -237,5 +243,6 @@ __SPECKIT_COMMAND_DELIBERATE_EXPLORE__  →  (user decides)  →  clarify / reco
 ## Related
 
 - Capture-routing reference: `.specify/extensions/deliberate/docs/capture-routing.md` — where open items go when the user exits recap
+- Ledger reference: `.specify/extensions/deliberate/docs/ledger.md` — ledger row statuses recap groups by
 - `__SPECKIT_COMMAND_DELIBERATE_RECORD__` — after an open question is decided
 - `__SPECKIT_COMMAND_DELIBERATE_EXPLORE__` — to diverge again on an open question
