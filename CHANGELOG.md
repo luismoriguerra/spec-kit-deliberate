@@ -6,6 +6,14 @@ All notable changes to this project are documented here. Format follows
 
 ## [Unreleased]
 
+### Added
+
+- `speckit.deliberate.triage` — read-only uncertainty queue: harvests
+  cross-artifact gaps, ranks P0/P1/P2 with `blocks X` citations, groups by
+  fixed category slugs (core taxonomy + deliberate-only), and routes each
+  head item to `clarify` / `record` / ADR path. Queue-only: never runs a
+  resolution loop.
+
 ## [0.2.0] - 2026-09-16
 
 ### Added

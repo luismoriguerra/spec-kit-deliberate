@@ -231,6 +231,7 @@ multiple captures in one turn unless asked:
 | `__SPECKIT_COMMAND_DELIBERATE_RECORD__` | **Writes** DR files — use after an open question is decided |
 | `__SPECKIT_COMMAND_ANALYZE__` | **Read-only** formal cross-artifact QA audit — use for consistency; recap is a status brief |
 | `__SPECKIT_COMMAND_CLARIFY__` | **Writes** answers into `spec.md` — use to close requirement gaps recap surfaces |
+| `__SPECKIT_COMMAND_DELIBERATE_TRIAGE__` | **Read-only** uncertainty queue — use to rank recap open items by impact/category |
 
 **Typical flow:**
 
@@ -246,3 +247,4 @@ __SPECKIT_COMMAND_DELIBERATE_EXPLORE__  →  (user decides)  →  clarify / reco
 - Ledger reference: `.specify/extensions/deliberate/docs/ledger.md` — ledger row statuses recap groups by
 - `__SPECKIT_COMMAND_DELIBERATE_RECORD__` — after an open question is decided
 - `__SPECKIT_COMMAND_DELIBERATE_EXPLORE__` — to diverge again on an open question
+- `__SPECKIT_COMMAND_DELIBERATE_TRIAGE__` — to rank open items before capturing them

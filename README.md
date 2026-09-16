@@ -2,7 +2,7 @@
 
 **Think before you spec. Record what you decided.**
 
-`deliberate` adds the three missing lifecycle phases around Spec Kit's
+`deliberate` adds the four missing lifecycle phases around Spec Kit's
 specify → clarify → plan → tasks → implement flow:
 
 - **explore** (`speckit.deliberate.explore`) — a read-only thinking partner:
@@ -14,15 +14,18 @@ specify → clarify → plan → tasks → implement flow:
 - **recap** (`speckit.deliberate.recap`) — a read-only status brief:
   state, decided items, open questions with recommendations, draft
   epic/issue/PR titles, next steps, and an agnostic TL;DR.
+- **triage** (`speckit.deliberate.triage`) — a read-only uncertainty queue:
+  harvests cross-artifact gaps, ranks P0/P1/P2, groups by category, and
+  routes each head item to its owning capture command.
 
-**Version:** 0.2.0 · **Requires:** spec-kit ≥ 1.0.0 · **License:** MIT
-**Provides:** 3 commands, 1 template · **Hooks:** none in v1
+**Version:** 0.3.0 · **Requires:** spec-kit ≥ 1.0.0 · **License:** MIT
+**Provides:** 4 commands, 1 template · **Hooks:** none in v1
 
 ---
 
 ## Why
 
-Spec Kit drives **spec → code** (forward). Three gaps stay open:
+Spec Kit drives **spec → code** (forward). Four gaps stay open:
 
 | Without it | With it |
 |---|---|
@@ -32,6 +35,7 @@ Spec Kit drives **spec → code** (forward). Three gaps stay open:
 | Feature call vs platform rule is a judgment call every time | the DR-vs-ADR firewall routes platform scope to your ADR workflow |
 | Analysis findings rot in reports | record materializes them as DRs with tasks |
 | No shared view of decided vs open vs next | recap converges the tree into a state line + five-section brief |
+| Uncertainties pile up with no order to kill them | triage ranks P0/P1/P2 by impact, groups by category, routes each head item |
 
 ## How it works
 
@@ -51,6 +55,10 @@ explore (read-only)  →  (user decides)  →  clarify / record / plan  →  …
    (with Recommended + alternatives), draft epics/issues/PRs, What is next,
    and an agnostic TL;DR — with a state line (`exploration` / `in-progress`
    / `done`). Read-only, like explore.
+5. **Triage** harvests every uncertainty across the tree into one visible
+   queue — board ranked P0/P1/P2, grouped by fixed category slugs, each
+   head item routed to `clarify` / `record` / ADR path. Queue-only,
+   read-only; re-run with a scope filter to continue by category.
 
 ### The DR contract
 
@@ -67,7 +75,7 @@ The `decisions/` directory has no index — the canonical index is the
 Pre-catalog (from the tagged release asset):
 
 ```bash
-specify extension add deliberate --from https://github.com/luismoriguerra/spec-kit-deliberate/releases/download/v0.2.0/deliberate-v0.2.0.zip
+specify extension add deliberate --from https://github.com/luismoriguerra/spec-kit-deliberate/releases/download/v0.3.0/deliberate-v0.3.0.zip
 # Verify out-of-band: compare sha256sum of the zip with the SHA-256 in the release notes
 ```
 
@@ -81,12 +89,12 @@ Verify:
 
 ```bash
 specify extension list
-# ✓ Deliberate (v0.2.0) — Commands: 3 | Hooks: 0 | Status: Enabled
+# ✓ Deliberate (v0.3.0) — Commands: 4 | Hooks: 0 | Status: Enabled
 ```
 
 On skills-based integrations the commands also appear as agent skills
 (`speckit-deliberate-explore`, `speckit-deliberate-record`,
-`speckit-deliberate-recap`).
+`speckit-deliberate-recap`, `speckit-deliberate-triage`).
 
 Once in the official default catalog or your own install-allowed catalog:
 
@@ -113,6 +121,9 @@ record a DR for <question>
 
 # 4. Anytime — converge the tree into a status brief
 recap this feature
+
+# 5. Anytime — rank uncertainties by impact and category
+triage this feature
 ```
 
 No active feature yet? Record drafts the proposal in chat and tells you to
@@ -125,6 +136,7 @@ run specify first — nothing is written until a feature exists.
 | `speckit.deliberate.explore` | read-only | Thinking partner: options, tradeoffs, risks, capture offers |
 | `speckit.deliberate.record` | read-write | Classify → allocate → draft → confirm → write DR + ledger |
 | `speckit.deliberate.recap` | read-only | Status brief: decided, open + recommendations, epics/PRs, next, TL;DR |
+| `speckit.deliberate.triage` | read-only | Uncertainty queue: P0/P1/P2 board, categories, routed resolution queue |
 
 `deliberate-config.yml` (all optional, defaults shown):
 
