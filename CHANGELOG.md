@@ -6,6 +6,37 @@ All notable changes to this project are documented here. Format follows
 
 ## [Unreleased]
 
+### Added
+
+- `speckit.deliberate.auto` — gated pipeline after explore or recap: a
+  read-only context sweep (constitution, feature tree, DRs, repo guidance,
+  code) builds an evidence pack and a context tier, then specify → clarify →
+  plan → tasks → analyze run with clarify re-entering on any detected gap and
+  resuming at the earliest affected stage. Gaps are ranked provisionally
+  with triage's signals and resolved by evidence, a tagged balanced default,
+  or left open; before the verdict a read-only `triage` pass (`all full`)
+  sets final ranks and merges uncertainties already in the tree — existing
+  DRs keep their ids, everything else becomes a non-approvable open item
+  routed to its owning command. DRs go through record: written `Accepted`
+  only under user approval, else queued in the report as `PD-N` with no DR
+  file or ledger row; approvals re-check evidence and DR-worthiness;
+  supersession is queued, then confirmed; dependent edits never applied
+  early. A named change ("change DR-NNN to …") bypasses the contradiction
+  gate into that confirmation path. Bounded analyze → remediate loop,
+  iterate mode that approves or rejects queued items and
+  reconciles every active artifact after a changed decision, and a verdict
+  (`READY` · `READY WITH PENDING DECISIONS` · `BLOCKED`) appended to
+  `auto-report.md`. Never implements or commits.
+- `auto:` block in `config-template.yml` (all keys optional with defaults)
+  and `docs/auto-mode.md` guide.
+
+### Changed
+
+- README: install and update docs state that every `specify extension`
+  command runs from the consumer project's root (or `SPECIFY_INIT_DIR`), and
+  a new Update section covers `--force --from` reinstalls and config
+  preservation.
+
 ## [0.3.0] - 2026-09-16
 
 ### Added

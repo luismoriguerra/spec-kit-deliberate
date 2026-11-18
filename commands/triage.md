@@ -54,6 +54,7 @@ insensitive; partial match is fine):
 | Implement code | `__SPECKIT_COMMAND_IMPLEMENT__` |
 | Brainstorm alternatives | `__SPECKIT_COMMAND_DELIBERATE_EXPLORE__` |
 | Status brief | `__SPECKIT_COMMAND_DELIBERATE_RECAP__` |
+| Run the pipeline | `__SPECKIT_COMMAND_DELIBERATE_AUTO__` |
 
 ## Hard guardrails (non-negotiable)
 
@@ -296,6 +297,7 @@ multiple captures in one turn unless asked:
 | `__SPECKIT_COMMAND_DELIBERATE_EXPLORE__` | **Divergent** brainstorming with ≥2 options — use to open up; triage converges to a queue |
 | `__SPECKIT_COMMAND_DELIBERATE_RECORD__` | **Writes** DR files — use after a queued decision item is answered |
 | `__SPECKIT_COMMAND_ANALYZE__` | **Read-only** formal consistency audit — triage ranks actionability, not correctness |
+| `__SPECKIT_COMMAND_DELIBERATE_AUTO__` | **Writes** — gated pipeline that runs this command as a read-only `all full` pass before its verdict and merges the board into its pending list |
 
 **Typical flow:**
 
@@ -313,3 +315,4 @@ __SPECKIT_COMMAND_DELIBERATE_TRIAGE__  →  clarify / record (capture one)  → 
 - `__SPECKIT_COMMAND_CLARIFY__` — to close spec gaps triage surfaces
 - `__SPECKIT_COMMAND_DELIBERATE_RECORD__` — to close queued decision items
 - `__SPECKIT_COMMAND_DELIBERATE_RECAP__` — to brief the tree after the queue drains
+- `__SPECKIT_COMMAND_DELIBERATE_AUTO__` — to run the gated pipeline that resolves items under approval

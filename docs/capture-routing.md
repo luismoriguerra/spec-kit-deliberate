@@ -19,6 +19,7 @@ renders them in its own invocation syntax.)
 | Cross-artifact consistency check | `speckit.analyze` | Report only (then DR/clarify if gaps) |
 | Status brief (decided/open/next) | `speckit.deliberate.recap` | Report only (chat) |
 | Uncertainty queue (impact/category/routes) | `speckit.deliberate.triage` | Report only (chat) |
+| Run the pipeline end to end (after explore, or after a recap names a change) | `speckit.deliberate.auto` | Spec, plan artifacts, tasks, DRs, `auto-report.md` |
 | Platform-wide rule | Project ADR workflow (see `platform_routing` in `deliberate-config.yml`) | Project ADR log |
 | Application code | `speckit.implement` | Source tree (never from explore directly) |
 
@@ -49,5 +50,5 @@ command) in a local overlay — do not fork this file for that.
 
 | Stage | Next command |
 |---|---|
-| Idea solid enough to name | `speckit.specify` (after branch setup, e.g. `speckit.git.feature` when installed) |
+| Idea solid enough to name | `speckit.specify` (after branch setup, e.g. `speckit.git.feature` when installed) — or `speckit.deliberate.auto` to run the whole pipeline |
 | Still fuzzy | Stay in explore |
