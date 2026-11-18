@@ -51,6 +51,7 @@ insensitive; partial match is fine):
 | Generate plan/tasks | `__SPECKIT_COMMAND_PLAN__` / `__SPECKIT_COMMAND_TASKS__` |
 | Implement code | `__SPECKIT_COMMAND_IMPLEMENT__` |
 | Brainstorm alternatives | `__SPECKIT_COMMAND_DELIBERATE_EXPLORE__` |
+| Run or re-run the pipeline | `__SPECKIT_COMMAND_DELIBERATE_AUTO__` |
 
 ## Hard guardrails (non-negotiable)
 
@@ -220,6 +221,7 @@ multiple captures in one turn unless asked:
 - New/changed requirement → `__SPECKIT_COMMAND_CLARIFY__`
 - Ready to plan or re-plan → `__SPECKIT_COMMAND_PLAN__`
 - Want alternatives first → `__SPECKIT_COMMAND_DELIBERATE_EXPLORE__`
+- Decision changed, docs need reconciling → `__SPECKIT_COMMAND_DELIBERATE_AUTO__`
 
 ---
 
@@ -232,6 +234,7 @@ multiple captures in one turn unless asked:
 | `__SPECKIT_COMMAND_ANALYZE__` | **Read-only** formal cross-artifact QA audit — use for consistency; recap is a status brief |
 | `__SPECKIT_COMMAND_CLARIFY__` | **Writes** answers into `spec.md` — use to close requirement gaps recap surfaces |
 | `__SPECKIT_COMMAND_DELIBERATE_TRIAGE__` | **Read-only** uncertainty queue — use to rank recap open items by impact/category |
+| `__SPECKIT_COMMAND_DELIBERATE_AUTO__` | **Writes** — iterate mode takes this brief plus a stated change and reconciles every document |
 
 **Typical flow:**
 
@@ -248,3 +251,4 @@ __SPECKIT_COMMAND_DELIBERATE_EXPLORE__  →  (user decides)  →  clarify / reco
 - `__SPECKIT_COMMAND_DELIBERATE_RECORD__` — after an open question is decided
 - `__SPECKIT_COMMAND_DELIBERATE_EXPLORE__` — to diverge again on an open question
 - `__SPECKIT_COMMAND_DELIBERATE_TRIAGE__` — to rank open items before capturing them
+- `__SPECKIT_COMMAND_DELIBERATE_AUTO__` — to reconcile the tree after a change this brief surfaces

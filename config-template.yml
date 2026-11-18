@@ -22,3 +22,20 @@ evidence_rule: ">=1 file:line or measured query result"
 platform_routing:
   adr_command: ""
   platform_signals: []
+
+# Auto mode (speckit.deliberate.auto). Every key is optional: a missing block
+# or key takes the default shown here. See docs/auto-mode.md.
+auto:
+  mode: auto                   # auto (detect) | initial | iterate
+  run_specify: true            # false = require an existing spec
+  report_file: auto-report.md  # one run section appended per run, in the feature dir
+  sweep_depth: standard        # quick | standard | deep
+  context_sources: []          # extra read-only paths: runbooks, wikis, ADR dirs
+  require_constitution: false  # true = BLOCKED when no constitution is found
+  approval: queue              # queue | accept-evidenced (new evidenced DRs written Accepted)
+  default_policy: balanced     # balanced | conservative | stop (no defaults)
+  defaultable_max_rank: P1     # gaps ranked above this are never defaulted
+  mark_assumed: "[assumed]"    # tag written next to defaulted content
+  auto_remediate: true         # false = report remediations without editing
+  clarify_max_interrupts: 3    # clarify interrupts per run
+  analyze_max_passes: 2        # analyze -> remediate passes per run
