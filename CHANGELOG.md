@@ -6,6 +6,14 @@ All notable changes to this project are documented here. Format follows
 
 ## [Unreleased]
 
+## [0.5.1] - 2026-11-19
+
+### Fixed
+
+- autopilot `preview` stage table now follows `Range` (it said clarify
+  "always runs" while a range can skip it) and shows the range in its header.
+  0.5.0 was never published; install 0.5.1.
+
 ## [0.5.0] - 2026-11-19
 
 ### Added
