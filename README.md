@@ -14,17 +14,17 @@ record, one that drives the flow:
   `spec.md` ledger, and supersede (never delete) prior decisions.
 - **recap** (`speckit.deliberate.recap`) — a read-only status brief:
   state, decided items, open questions with recommendations, draft
-  epic/issue/PR titles, next steps, and an agnostic TL;DR.
+  epic/issue/PR titles, next steps, and an agnostic TL;DR. Supports a `simple` mode (`recap simple`).
 - **triage** (`speckit.deliberate.triage`) — a read-only uncertainty queue:
   harvests cross-artifact gaps, ranks P0/P1/P2, groups by category, and
   routes each head item to its owning capture command.
-- **auto** (`speckit.deliberate.auto`) — a gated pipeline: sweeps the project
+- **autopilot** (`speckit.deliberate.autopilot`) — a gated pipeline: sweeps the project
   for constraints and evidence, runs specify → clarify → plan → tasks →
   analyze, settles recommendations through DRs, applies safe remediations,
   and reports whether the spec is ready for review. Iterate runs reconcile
   every document after a changed decision.
 
-**Version:** 0.4.0 · **Requires:** spec-kit ≥ 1.0.0 · **License:** MIT
+**Version:** 0.5.0 · **Requires:** spec-kit ≥ 1.0.0 · **License:** MIT
 **Provides:** 5 commands, 1 template · **Hooks:** none in v1
 
 ---
@@ -42,13 +42,13 @@ Spec Kit drives **spec → code** (forward). These gaps stay open:
 | Analysis findings rot in reports | record materializes them as DRs with tasks |
 | No shared view of decided vs open vs next | recap converges the tree into a state line + five-section brief |
 | Uncertainties pile up with no order to kill them | triage ranks P0/P1/P2 by impact, groups by category, routes each head item |
-| Specify, clarify, plan, tasks, analyze get chained by hand after every exploration and every changed decision | auto runs them gated by evidence and approval, then reports readiness |
+| Specify, clarify, plan, tasks, analyze get chained by hand after every exploration and every changed decision | autopilot runs them gated by evidence and approval, then reports readiness |
 
 ## How it works
 
 ```
 explore (read-only)  →  (user decides)  →  clarify / record / plan  →  …
-explore (read-only)  →  auto (specify → clarify → plan → tasks → analyze)  →  review  →  implement
+explore (read-only)  →  autopilot (specify → clarify → plan → tasks → analyze)  →  review  →  implement
 ```
 
 1. **Explore** loads only what the conversation needs (`spec.md`, DRs,
@@ -67,7 +67,7 @@ explore (read-only)  →  auto (specify → clarify → plan → tasks → analy
    queue — board ranked P0/P1/P2, grouped by fixed category slugs, each
    head item routed to `clarify` / `record` / ADR path. Queue-only,
    read-only; re-run with a scope filter to continue by category.
-6. **Auto** sweeps the constitution, feature tree, DRs, repo guidance, and
+6. **Autopilot** sweeps the constitution, feature tree, DRs, repo guidance, and
    code into a Context Pack, then runs the core stages. Every gap is ranked
    P0/P1/P2 and resolved with evidence, a tagged balanced default, or left
    open. Evidenced DRs are written `Accepted` only under your approval;
@@ -76,8 +76,8 @@ explore (read-only)  →  auto (specify → clarify → plan → tasks → analy
    stage finds a gap, resuming at the earliest affected stage. Before the
    verdict, a read-only triage pass (`all full`) merges uncertainties already
    in the tree. Ends with a verdict (`READY` · `READY WITH PENDING DECISIONS`
-   · `BLOCKED`) appended to `auto-report.md`. Never implements or commits —
-   see `docs/auto-mode.md`.
+   · `BLOCKED`) appended to `autopilot-report.md`. Never implements or commits —
+   see `docs/autopilot.md`.
 
 ### The DR contract
 
@@ -122,7 +122,7 @@ specify extension list
 On skills-based integrations the commands also appear as agent skills
 (`speckit-deliberate-explore`, `speckit-deliberate-record`,
 `speckit-deliberate-recap`, `speckit-deliberate-triage`,
-`speckit-deliberate-auto`).
+`speckit-deliberate-autopilot`).
 
 Once in the official default catalog or your own install-allowed catalog:
 
@@ -148,7 +148,7 @@ specify extension list   # ✓ Deliberate (v0.4.0) — Commands: 5
   install-allowed catalog; until then the CLI skips it. Use `--force --from`.
 - `--force` keeps your `deliberate-config.yml` (the CLI backs up and restores
   `*-config.yml`) but does not merge new keys. New settings are optional with
-  defaults; copy new blocks (e.g. `auto:` in 0.4.0) from `config-template.yml`
+  defaults; copy new blocks (e.g. `autopilot:`, renamed from `auto:` in 0.5.0) from `config-template.yml`
   to customize.
 - Feature trees (`specs/`, DRs, ledgers) are never touched by an update.
 
@@ -172,14 +172,14 @@ recap this feature
 triage this feature
 
 # 6. After explore converges — run the gated pipeline, get a readiness report
-auto this feature
+autopilot this feature
 
 # 7. After a recap or a changed decision — reconcile for the next review
-auto: change DR-004 to <new option>
+autopilot: change DR-004 to <new option>
 ```
 
 No active feature yet? Record drafts the proposal in chat and tells you to
-run specify first — nothing is written until a feature exists. Auto runs
+run specify first — nothing is written until a feature exists. Autopilot runs
 specify itself when the conversation holds an explore brief.
 
 ## Commands & configuration
@@ -190,7 +190,7 @@ specify itself when the conversation holds an explore brief.
 | `speckit.deliberate.record` | read-write | Classify → allocate → draft → confirm → write DR + ledger |
 | `speckit.deliberate.recap` | read-only | Status brief: decided, open + recommendations, epics/PRs, next, TL;DR |
 | `speckit.deliberate.triage` | read-only | Uncertainty queue: P0/P1/P2 board, categories, routed resolution queue |
-| `speckit.deliberate.auto` | read-write | Context sweep → specify → clarify → plan → tasks → analyze → remediate → readiness report; iterate reconciles changes |
+| `speckit.deliberate.autopilot` | read-write | Context sweep → specify → clarify → plan → tasks → analyze → remediate → readiness report; iterate reconciles changes |
 
 `deliberate-config.yml` (all optional, defaults shown):
 
@@ -204,8 +204,8 @@ platform_routing:
   platform_signals: []  # project-specific ADR triggers
 ```
 
-Auto mode adds an optional `auto:` block (approval, default policy, loop
-bounds, report file) — see `docs/auto-mode.md`. See
+Autopilot adds an optional `autopilot:` block (approval, default policy, loop
+bounds, report file) — see `docs/autopilot.md`. See
 `docs/platform-overlay-example.md` for a worked platform-overlay example.
 
 ## Not to be confused with

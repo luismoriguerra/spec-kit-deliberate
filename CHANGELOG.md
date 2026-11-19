@@ -6,6 +6,30 @@ All notable changes to this project are documented here. Format follows
 
 ## [Unreleased]
 
+### Added
+
+- `speckit.deliberate.recap` gains a `simple` mode (read-only, no codes or
+  paths, short, written for junior engineers).
+- `speckit.deliberate.autopilot` gains a `preview` / `dry run` input that
+  runs Steps 0–2 and shows the stage plan and would-be writes without
+  writing anything, and an `autopilot.chat_report` setting (`brief` default,
+  `full`) — chat now prints a short digest while `autopilot-report.md`
+  keeps the full run section.
+- `speckit.deliberate.autopilot` gains a stage range (`until` / `from` /
+  `only` a stage; verdict `READY THROUGH <stage>` when analyze is out of
+  range) and an optional triage pass (`autopilot.triage_pass`, or `skip
+  triage` per run; the verdict is capped at `READY WITH PENDING DECISIONS`
+  while skipped).
+
+### Changed
+
+- `speckit.deliberate.auto` renamed to `speckit.deliberate.autopilot`
+  (BREAKING): command file, `auto:` config block → `autopilot:` (the
+  `mode: auto` detect value is unchanged), report file `auto-report.md` →
+  `autopilot-report.md`, guide `docs/auto-mode.md` → `docs/autopilot.md`.
+  Migrate: rename your `auto:` block and rename existing `auto-report.md`
+  files.
+
 ## [0.4.0] - 2026-11-18
 
 ### Added

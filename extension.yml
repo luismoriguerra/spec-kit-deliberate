@@ -5,8 +5,8 @@ schema_version: "1.0"
 extension:
   id: deliberate
   name: Deliberate
-  version: 0.4.0
-  description: Exploration, decision records, status, triage, and a gated auto pipeline for Spec Kit
+  version: 0.5.0
+  description: Exploration, decision records, status, triage, and a gated autopilot pipeline for Spec Kit
   author: luismoriguerra
   repository: https://github.com/luismoriguerra/spec-kit-deliberate
   license: MIT
@@ -28,8 +28,8 @@ provides:
     - name: speckit.deliberate.triage
       file: commands/triage.md
       description: Triage uncertainties by impact and category across the feature tree
-    - name: speckit.deliberate.auto
-      file: commands/auto.md
+    - name: speckit.deliberate.autopilot
+      file: commands/autopilot.md
       description: Run specify, clarify, plan, tasks, and analyze gated by evidence and approval
   templates:
     - name: decision-record-template
@@ -38,7 +38,7 @@ provides:
   config:
     - name: deliberate-config.yml
       template: config-template.yml
-      description: Decisions dir, ledger heading, platform-routing overlay, and auto-mode settings
+      description: Decisions dir, ledger heading, platform-routing overlay, and autopilot settings
       required: false
 
 tags:

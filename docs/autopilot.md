@@ -1,6 +1,6 @@
-# Auto mode — guide
+# Autopilot — guide
 
-`speckit.deliberate.auto` runs the core Spec Kit flow
+`speckit.deliberate.autopilot` runs the core Spec Kit flow
 (specify → clarify → plan → tasks → analyze) in one gated pass, then writes a
 readiness report. It is the only deliberate command that drives other
 commands. The exact rules live in the command body; this page is the
@@ -10,14 +10,14 @@ operator's view.
 
 | Moment | Say | Mode |
 |---|---|---|
-| Explore converged, no feature yet | "auto this feature" | `initial` — creates the feature via specify |
-| Feature has some artifacts already | "auto this feature" | `initial` — adopts what exists, runs only missing stages, then analyze |
-| After a recap, changing a decision | "auto: change DR-004 to event-driven" | `iterate` — supersede (after you confirm) and reconcile |
-| Approving pending decisions | "auto: approve PD-3, DR-012" | `iterate` — re-check evidence and DR-worthiness, write or flip the DRs, apply the edits they unblocked |
+| Explore converged, no feature yet | "autopilot this feature" | `initial` — creates the feature via specify |
+| Feature has some artifacts already | "autopilot this feature" | `initial` — adopts what exists, runs only missing stages, then analyze |
+| After a recap, changing a decision | "autopilot: change DR-004 to event-driven" | `iterate` — supersede (after you confirm) and reconcile |
+| Approving pending decisions | "autopilot: approve PD-3, DR-012" | `iterate` — re-check evidence and DR-worthiness, write or flip the DRs, apply the edits they unblocked |
 | Before a review, after manual edits | "reconcile the docs for the next review" | `iterate` — delta sweep, clarify scan, analyze loop |
 
 Mode is detected from the feature's report file and your input; force it
-with `auto.mode`.
+with `autopilot.mode`.
 
 ## Lifecycle
 
@@ -41,7 +41,7 @@ flowchart TD
 Every question a stage raises goes through one protocol: classify (spec gap,
 DR, platform, skip) → rank P0/P1/P2 → resolve with evidence, a balanced
 default, or leave open → write only what the approval rule allows. Ranks
-during the run are provisional; before the verdict auto runs
+during the run are provisional; before the verdict autopilot runs
 `speckit.deliberate.triage` (`all full`) as a separate read-only pass and
 merges its board, so uncertainties already in the tree — older Proposed DRs,
 low-confidence DRs, fired Revisit Triggers, failing checklist gates, blocked
@@ -54,7 +54,7 @@ tasks — count too. A tree that could not be triaged is never `READY`.
 | `approval: queue` (default) | Queued in the report — no write | Queued in the report — no write | Waits for your confirmation |
 | `approval: accept-evidenced` | Written `Accepted` | Queued in the report — no write | Waits for your confirmation |
 
-Queued decisions get a stable `PD-N` id in `auto-report.md`; no DR file or
+Queued decisions get a stable `PD-N` id in `autopilot-report.md`; no DR file or
 ledger row exists until you approve. Existing Proposed DRs keep their own
 `DR-NNN`. Edits that depend on a pending decision are never applied.
 "approve PD-…" in a later iterate run re-checks that the item is still
@@ -70,7 +70,7 @@ command. Open items count toward the verdict but cannot be approved.
 ## Gaps with little or no context
 
 The sweep reports a **context tier** (`Rich` · `Partial` · `Sparse`). For a
-gap with no evidence, auto picks the **balanced** option — best mix of
+gap with no evidence, autopilot picks the **balanced** option — best mix of
 effort, cost, and reversibility among options that satisfy every constraint
 — and tags it `[assumed]` where it lands. Defaults never count as evidence
 and never become Accepted DRs.
@@ -85,25 +85,48 @@ compliance calls, platform-scoped items, and any P0.
 |---|---|---|
 | `BLOCKED` | A pending P0, an awaited ADR handoff a stage needs, an unconfirmed supersession, an unresolved CRITICAL finding, or a gate | Clear the named blocker |
 | `READY WITH PENDING DECISIONS` | No blocker; P1 decisions or assumptions await you | Approve or change them, then iterate |
-| `READY` | Only P2 items, or none | `speckit.implement` — auto never runs it |
+| `READY` | Only P2 items, or none | `speckit.implement` — autopilot never runs it |
+| `READY THROUGH <stage>` | Only P2 items, or none, but a `Range` kept analyze from running | `autopilot from <next stage>` — implement is not offered |
 
 ## Report file
 
-`specs/NNN-*/auto-report.md` (`auto.report_file`). One `## Run N` section is
+`specs/NNN-*/autopilot-report.md` (`autopilot.report_file`). One `## Run N` section is
 appended per run; earlier runs are never edited. Iterate mode reads the last
 run to find pending items and assumptions.
+
+## Preview
+
+Say "autopilot preview" (or "dry run") to see the plan without writing
+anything: the resolved feature and mode, the context tier, whether a gate
+would block, which stages would generate, revise, or skip, and what would be
+written under your approval setting. Preview stops after the gate; it does
+not predict clarify answers, findings, or the verdict.
+
+## Stage range
+
+Run part of the pipeline: "autopilot until plan", "autopilot from tasks",
+"autopilot only analyze". Stages after the range are `not run: out of range`;
+stages before it must already have their artifacts. A clarify interrupt can
+still fire inside the range, but edits stop at its end. If analyze does not
+run, the verdict is `READY THROUGH <stage>` — never `READY` — and the next
+step is `autopilot from <next stage>`.
+
+A range never lets a decision be half-applied: if approving or superseding a
+decision would edit an artifact beyond the range (or needs the analyze
+check), autopilot writes nothing, leaves it pending, and names the wider
+range it needs.
 
 ## Configuration
 
 All keys are optional; a config from an older version works unchanged.
-Copy the `auto:` block from `config-template.yml` into
+Copy the `autopilot:` block from `config-template.yml` into
 `deliberate-config.yml` to customize.
 
 | Key | Default | Effect |
 |---|---|---|
 | `mode` | `auto` | `auto` detects; `initial` · `iterate` force |
 | `run_specify` | `true` | `false` requires an existing spec |
-| `report_file` | `auto-report.md` | Report path inside the feature dir |
+| `report_file` | `autopilot-report.md` | Report path inside the feature dir |
 | `sweep_depth` | `standard` | `quick` · `standard` · `deep` codebase breadth |
 | `context_sources` | `[]` | Extra read-only paths for the sweep |
 | `require_constitution` | `false` | `true` blocks when no constitution exists |
@@ -114,9 +137,11 @@ Copy the `auto:` block from `config-template.yml` into
 | `auto_remediate` | `true` | `false` reports remediations without editing |
 | `clarify_max_interrupts` | `3` | Clarify interrupts per run |
 | `analyze_max_passes` | `2` | Analyze → remediate passes per run |
+| `chat_report` | `brief` | `brief` prints a short digest in chat; `full` prints the whole run section. The report file is always full |
+| `triage_pass` | `true` | `false` skips the triage pass (also `skip triage` per run); the verdict is then capped at `READY WITH PENDING DECISIONS` |
 
 ## Boundaries
 
-Auto writes only inside the feature directory (plus what specify creates).
+Autopilot writes only inside the feature directory (plus what specify creates).
 It never edits the constitution, ADR logs, other features, or application
 code, never commits, and never runs implement.
