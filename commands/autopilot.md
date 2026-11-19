@@ -230,16 +230,19 @@ nothing — no artifact, no DR, no ledger row, no `REPORT` section, no
 Emit one block, then wait:
 
 ```markdown
-**Preview — <feature or greenfield>** · mode: initial|iterate · tier: Rich|Partial|Sparse
+**Preview — <feature or greenfield>** · mode: initial|iterate · range: all|<range> · tier: Rich|Partial|Sparse
 **Gate:** clear | BLOCKED — <both sides of the conflict>
 
 | Stage | Would do | Why |
 |---|---|---|
-| specify | skip (spec exists) / generate | … |
-| clarify | run | always runs |
-| plan | generate / revise <sections> / not run: <reason> | … |
-| tasks | … | … |
-| analyze + triage | run / not run: out of range / triage skipped | analyze runs when in range and `tasks.md` exists; triage runs unless skipped |
+| specify | skip (spec exists) / generate / skipped (range) / not run: out of range | … |
+| clarify | run / skipped (range) / not run: out of range | the stage row follows `Range`; gap-driven interrupts can still fire in a run |
+| plan | generate / revise <sections> / skipped (range) / not run: out of range / not run: <reason> | … |
+| tasks | generate / revise <sections> / skipped (range) / not run: out of range / not run: <reason> | … |
+| analyze | run / not run: out of range / not run: no `tasks.md` | runs when in range and `tasks.md` exists |
+| triage pass | run / skipped | runs regardless of range unless skipped (`autopilot.triage_pass`, `skip triage`) |
+
+With `from X`, also flag any earlier stage whose required artifact is missing as `BLOCKED — range needs <artifact>`.
 
 **Writes if run:** files under FEATURE_DIR · DR files: none written on autopilot's own judgment under `queue`; `accept-evidenced` allows evidenced, supersede-nothing DRs · a Change with an `approve PD-N` / `approve DR-NNN` would write or flip that DR once it passes Step 7's re-check (the user's message is the approval, even under `queue`) · report: `<REPORT>`
 **Known pending (from the last run / sweep):** PD-N and open items, or `none`
