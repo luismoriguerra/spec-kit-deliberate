@@ -52,7 +52,7 @@ reported in chat instead of delegated.
 | Source | Signal | This command action |
 |---|---|---|
 | `speckit.analyze` | Finding needing a decision | `create` DR + optional task |
-| `speckit.deliberate.auto` | Verified decision during a run | `propose-only` draft; `create` as Accepted only under approval, else queued in its report — no write |
+| `speckit.deliberate.autopilot` | Verified decision during a run | `propose-only` draft; `create` as Accepted only under approval, else queued in its report — no write |
 | Project audit/review | Feature-local gap | `create` or `batch` DR |
 | Project audit/review | Platform gap | ADR path |
 | Project audit/review | Already resolved | Usually SKIP |

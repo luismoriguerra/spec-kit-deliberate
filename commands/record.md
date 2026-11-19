@@ -249,4 +249,4 @@ Next: link from plan/checklist as needed · run __SPECKIT_COMMAND_ANALYZE__ if a
 - `__SPECKIT_COMMAND_ANALYZE__` — read-only; pair with this command to materialize DRs
 - `__SPECKIT_COMMAND_DELIBERATE_RECAP__` — read-only status brief over the ledger and tasks
 - `__SPECKIT_COMMAND_DELIBERATE_TRIAGE__` — read-only queue feeding this command one decision item at a time
-- `__SPECKIT_COMMAND_DELIBERATE_AUTO__` — calls this command (`propose-only` to verify, write modes only under approval)
+- `__SPECKIT_COMMAND_DELIBERATE_AUTOPILOT__` — calls this command (`propose-only` to verify, write modes only under approval)

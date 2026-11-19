@@ -28,6 +28,7 @@ Parse optional arguments:
 | Feature | Active feature (`check-prerequisites.sh`) or named `specs/NNN-*` |
 | Depth | `compact` · `full` (more bullets per section, same five sections) |
 | Audience | `dev` · `github` · `slack` (tunes the agnostic TL;DR only) |
+| Mode | `standard` (default) · `simple` — see "Simple mode" (Step 3b); overrides Depth and Audience |
 
 ## Triggers
 
@@ -41,6 +42,7 @@ insensitive; partial match is fine):
 | `open questions` / `decisions made` | "list open questions with recommendations" |
 | `epics` / `issues` / `PR plan` | "draft epics and PRs from the current spec" |
 | `brief` / `summary` / `tl;dr` | "give me a compact brief I can paste in chat" |
+| `recap simple` / `simple recap` / `recap in simple mode` | "recap in simple mode" (bare `simple` is **not** a trigger; it only selects the mode once recap is invoked) |
 
 **Not a trigger** — these **mutate**; offer them only as explicit exit paths:
 
@@ -51,7 +53,7 @@ insensitive; partial match is fine):
 | Generate plan/tasks | `__SPECKIT_COMMAND_PLAN__` / `__SPECKIT_COMMAND_TASKS__` |
 | Implement code | `__SPECKIT_COMMAND_IMPLEMENT__` |
 | Brainstorm alternatives | `__SPECKIT_COMMAND_DELIBERATE_EXPLORE__` |
-| Run or re-run the pipeline | `__SPECKIT_COMMAND_DELIBERATE_AUTO__` |
+| Run or re-run the pipeline | `__SPECKIT_COMMAND_DELIBERATE_AUTOPILOT__` |
 
 ## Hard guardrails (non-negotiable)
 
@@ -60,8 +62,9 @@ insensitive; partial match is fine):
 - **No delegation that writes** — do not invoke implement, record, clarify, or
   similar commands unless the user **explicitly** says to exit recap and run
   that command.
-- **Grounded then agnostic** — sections 1–4 cite `DR-NNN` / `FR-xxx` / `Txxx`
-  codes; section 5 (agnostic TL;DR) cites nothing. Never mix the layers.
+- **Grounded then agnostic** — in `standard` mode, sections 1–4 cite `DR-NNN` /
+  `FR-xxx` / `Txxx` codes; section 5 (agnostic TL;DR) cites nothing. Never
+  mix the layers. `simple` mode cites no codes anywhere (Step 3b).
 - **Recommend, don't decide** — open questions get `Recommended:` plus 1–2
   alternatives with a one-line why. Never mark anything decided in chat.
 - **Never invent** — `Decided` cites only ledger `Accepted` rows, `[x]` tasks,
@@ -211,6 +214,49 @@ terse; `dev`: default).
 
 ---
 
+## Step 3b — Simple mode
+
+Applies when the input says `simple` ("recap in simple mode", "simple
+recap"). Same guardrails and the same Step 0–2 loading and state
+classification; only the report changes. Mode overrides Depth and Audience.
+
+Rules:
+
+- **No code.** No `DR-` / `FR-` / `SC-` / `T0` codes, file paths, code blocks,
+  commands, or backticked identifiers in the output. Still read the ledger,
+  spec, and tasks so the facts are right; just do not cite them.
+- **Simple.** Plain words, short sentences. Define any unavoidable jargon in a
+  few words on first use. Say why each point matters.
+- **Short.** At most 3 bullets per section. Skip section 3 (epics / issues /
+  PRs) entirely.
+- **Junior-friendly.** Write for someone new to the project: no assumed
+  context, no shorthand, no "as decided in DR-009".
+
+Emit exactly these sections instead of the standard five:
+
+```markdown
+**Where we are:** in-progress — specs are written, two choices still open.
+
+### What is settled
+- Detail pages open inside the page itself, so people keep their place.
+
+### What is still open
+- Where the export button goes. We suggest the toolbar because the other
+  screens already do it that way.
+
+### What to do next
+1. Pick the export button spot, then record that decision.
+
+### In short
+Detail pages are settled; the export button is the one open call.
+```
+
+Self-check before emitting: if any code, path, or unexplained term remains,
+rewrite it. Capture offers (Step 4) collapse to one plain sentence, e.g.
+"Want me to record any of this as a decision?" — and still wait.
+
+---
+
 ## Step 4 — Offer capture (never auto-capture)
 
 End with one capture row per open thread from the capture-routing reference
@@ -221,7 +267,7 @@ multiple captures in one turn unless asked:
 - New/changed requirement → `__SPECKIT_COMMAND_CLARIFY__`
 - Ready to plan or re-plan → `__SPECKIT_COMMAND_PLAN__`
 - Want alternatives first → `__SPECKIT_COMMAND_DELIBERATE_EXPLORE__`
-- Decision changed, docs need reconciling → `__SPECKIT_COMMAND_DELIBERATE_AUTO__`
+- Decision changed, docs need reconciling → `__SPECKIT_COMMAND_DELIBERATE_AUTOPILOT__`
 
 ---
 
@@ -234,7 +280,7 @@ multiple captures in one turn unless asked:
 | `__SPECKIT_COMMAND_ANALYZE__` | **Read-only** formal cross-artifact QA audit — use for consistency; recap is a status brief |
 | `__SPECKIT_COMMAND_CLARIFY__` | **Writes** answers into `spec.md` — use to close requirement gaps recap surfaces |
 | `__SPECKIT_COMMAND_DELIBERATE_TRIAGE__` | **Read-only** uncertainty queue — use to rank recap open items by impact/category |
-| `__SPECKIT_COMMAND_DELIBERATE_AUTO__` | **Writes** — iterate mode takes this brief plus a stated change and reconciles every document |
+| `__SPECKIT_COMMAND_DELIBERATE_AUTOPILOT__` | **Writes** — iterate mode takes this brief plus a stated change and reconciles every document |
 
 **Typical flow:**
 
@@ -251,4 +297,4 @@ __SPECKIT_COMMAND_DELIBERATE_EXPLORE__  →  (user decides)  →  clarify / reco
 - `__SPECKIT_COMMAND_DELIBERATE_RECORD__` — after an open question is decided
 - `__SPECKIT_COMMAND_DELIBERATE_EXPLORE__` — to diverge again on an open question
 - `__SPECKIT_COMMAND_DELIBERATE_TRIAGE__` — to rank open items before capturing them
-- `__SPECKIT_COMMAND_DELIBERATE_AUTO__` — to reconcile the tree after a change this brief surfaces
+- `__SPECKIT_COMMAND_DELIBERATE_AUTOPILOT__` — to reconcile the tree after a change this brief surfaces

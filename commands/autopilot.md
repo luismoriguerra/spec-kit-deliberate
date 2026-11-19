@@ -2,23 +2,23 @@
 description: "Run specify → clarify → plan → tasks → analyze, gated by evidence and approval"
 ---
 
-# Auto
+# Autopilot
 
 **Gated pipeline for Spec Kit** — the one deliberate command that drives the
-core flow. After explore converges, or after a recap names a change, auto
+core flow. After explore converges, or after a recap names a change, autopilot
 grounds itself in project evidence, runs specify → clarify → plan → tasks →
 analyze, settles recommendations through decision records, applies safe
 remediations, and reports whether the spec is ready for review.
 
-> **Evidence first, authority second.** Auto verifies options on its own; it
+> **Evidence first, authority second.** Autopilot verifies options on its own; it
 > accepts decisions only under an approval the user gave. Everything else is
 > queued, ranked, and reported — never treated as decided.
 
 **Writes:** inside the feature directory only — `spec.md`, `plan.md`,
 `research.md`, `data-model.md`, `contracts/`, `quickstart.md`, `tasks.md`,
 `checklists/`, `DR-*.md` files under the configured decisions dir, the
-Decision records ledger, and the run report (`auto.report_file`, default
-`auto-report.md`). With no feature yet: whatever the specify stage creates
+Decision records ledger, and the run report (`autopilot.report_file`, default
+`autopilot-report.md`). With no feature yet: whatever the specify stage creates
 (`specs/NNN-*`, `.specify/feature.json`, a branch if a `before_specify` hook
 creates one). `.specify/feature.json` also changes when a pinned stage
 persists the pinned feature (Step 0).
@@ -40,14 +40,18 @@ Parse optional arguments:
 | Input | Default |
 |---|---|
 | Feature | Active feature (`check-prerequisites.sh`) or named `specs/NNN-*`; none → greenfield (Step 0) |
-| Mode | `auto.mode` (`auto`) · `initial` · `iterate` |
+| Mode | `autopilot.mode` (`auto`) · `initial` · `iterate` |
 | Change | Iterate only — a decision change ("change DR-004 to event-driven"), approvals ("approve PD-3, PD-5"), or a requirement change |
-| Approval | `auto.approval` (`queue`); "just write it" in the input means `accept-evidenced` for this run |
-| Depth | `auto.sweep_depth` (`standard`) · `quick` · `deep` |
+| Approval | `autopilot.approval` (`queue`); "just write it" in the input means `accept-evidenced` for this run |
+| Depth | `autopilot.sweep_depth` (`standard`) · `quick` · `deep` |
+| Preview | `preview` / `dry run` in the input → run Steps 0–2 only and show the plan; writes nothing (see "Preview") |
+| Report | `autopilot.chat_report` (`brief`) · `full` — what Step 9 prints in chat; the report file always gets the full run section |
+| Range | `until <stage>` / `through <stage>` · `from <stage>` · `only <stage>` (stages: specify, clarify, plan, tasks, analyze); default all — see "Stage range" (Step 4) |
+| Triage pass | `autopilot.triage_pass` (`true`); `skip triage` / `no triage` in the input skips it for this run (Step 8) |
 
 Read `.specify/extensions/deliberate/deliberate-config.yml` when present:
 `decisions_dir`, `ledger_heading`, `task_enabled`, `evidence_rule`,
-`platform_routing`, and the `auto:` block. Every `auto.*` key is optional;
+`platform_routing`, and the `autopilot:` block. Every `autopilot.*` key is optional;
 a missing block or key takes the default documented in
 `.specify/extensions/deliberate/config-template.yml`.
 
@@ -58,12 +62,14 @@ insensitive; partial match is fine):
 
 | Trigger | Example |
 |---|---|
-| `auto` / `auto mode` | "auto this feature" |
+| `autopilot` / `autopilot mode` | "autopilot this feature" |
 | run the pipeline | "run specify through analyze for this idea" |
-| after explore | "we're done exploring — auto it" |
-| change a decision | "auto: change DR-004 to event-driven" |
-| approve pending | "auto: approve PD-3 and PD-5" |
+| after explore | "we're done exploring — autopilot it" |
+| change a decision | "autopilot: change DR-004 to event-driven" |
+| approve pending | "autopilot: approve PD-3 and PD-5" |
 | reconcile / ready for review | "reconcile the docs for the next review" |
+| preview / dry run | "autopilot preview", "autopilot dry run for this feature" |
+| stage range | "autopilot until plan", "autopilot from tasks", "autopilot only analyze" |
 
 **Not a trigger** — redirect instead:
 
@@ -74,11 +80,11 @@ insensitive; partial match is fine):
 | Status brief only | `__SPECKIT_COMMAND_DELIBERATE_RECAP__` |
 | Ranked queue only | `__SPECKIT_COMMAND_DELIBERATE_TRIAGE__` |
 | Read-only audit only | `__SPECKIT_COMMAND_ANALYZE__` |
-| Implement code | `__SPECKIT_COMMAND_IMPLEMENT__` — auto never runs it |
+| Implement code | `__SPECKIT_COMMAND_IMPLEMENT__` — autopilot never runs it |
 
 ## Hard guardrails (non-negotiable)
 
-- **No code, no implement, no commits** — auto stops at a reviewable spec
+- **No code, no implement, no commits** — autopilot stops at a reviewable spec
   tree. No git commit/push, build, migration, or deploy.
 - **Feature-scoped writes** — edit only inside `FEATURE_DIR`, plus what the
   specify stage creates. Never edit the constitution, ADR logs, other
@@ -91,7 +97,7 @@ insensitive; partial match is fine):
   reconcile edits that depend on a queued decision, an existing Proposed DR,
   a default, or an unconfirmed supersession are not applied.
 - **Defaults are assumptions** — a balanced default is tagged with
-  `auto.mark_assumed`, never counts toward `evidence_rule`, and never becomes
+  `autopilot.mark_assumed`, never counts toward `evidence_rule`, and never becomes
   an Accepted DR.
 - **Platform scope is not a DR** — platform signals go to the ADR handoff in
   the routing reference, take no P-rank, and are never defaulted.
@@ -99,7 +105,7 @@ insensitive; partial match is fine):
   section by section; never regenerated over the user's content.
 - **History is immutable** — old DR bodies, superseded ledger rows,
   clarification session bullets, and prior report runs stay intact.
-- **Bounded** — `auto.clarify_max_interrupts` and `auto.analyze_max_passes`
+- **Bounded** — `autopilot.clarify_max_interrupts` and `autopilot.analyze_max_passes`
   cap every loop; the same gap never triggers twice.
 - **Grounded** — every edit, decision, and default cites its source:
   `file:line`, a measured result, `conversation`, or `default: balanced`.
@@ -120,7 +126,7 @@ From the project root, run the appropriate script for your platform:
 
 Parse `FEATURE_DIR` and `FEATURE_SPEC`; read `.specify/feature.json` when the
 script is not enough. Set `DECISIONS = $FEATURE_DIR/<decisions_dir>` and
-`REPORT = $FEATURE_DIR/<auto.report_file>`.
+`REPORT = $FEATURE_DIR/<autopilot.report_file>`.
 
 **Pin the feature.** A feature named in the input wins over the active one:
 resolve it by running the script with `SPECIFY_FEATURE_DIRECTORY=<named
@@ -140,15 +146,15 @@ creates — `FEATURE_DIR` holds for the whole run:
 | Situation | Action |
 |---|---|
 | Feature with `spec.md` | Use it; the specify stage reports `skipped (spec exists)` |
-| No feature, explore brief in this conversation, `auto.run_specify: true` | Greenfield — the specify stage creates the feature (Step 4) |
-| No feature, `auto.run_specify: false` | Stop — `BLOCKED: needs specify` |
+| No feature, explore brief in this conversation, `autopilot.run_specify: true` | Greenfield — the specify stage creates the feature (Step 4) |
+| No feature, `autopilot.run_specify: false` | Stop — `BLOCKED: needs specify` |
 | No feature, no explore brief | Stop — run `__SPECKIT_COMMAND_DELIBERATE_EXPLORE__` first; never invent a feature description |
 
 The **explore brief** is what the user said in this conversation: the
 problem, the chosen direction, options ruled out, and stated limits. A lean
 the agent offered is not the user's choice.
 
-Mode when `auto.mode` is `auto`: `iterate` if `REPORT` holds a prior run or a
+Mode when `autopilot.mode` is `auto`: `iterate` if `REPORT` holds a prior run or a
 Change input is present; otherwise `initial`. `initial` on an existing
 feature adopts its artifacts (Step 4).
 
@@ -157,7 +163,7 @@ feature adopts its artifacts (Step 4).
 ## Step 1 — Context sweep → Context Pack (read-only)
 
 Gather everything that constrains or evidences the work before any stage
-runs. `auto.sweep_depth`: `quick` = rows 1–5; `standard` = + codebase search
+runs. `autopilot.sweep_depth`: `quick` = rows 1–5; `standard` = + codebase search
 for the feature's domain terms; `deep` = + dependency manifests, tests, and
 `git log` of the touched areas.
 
@@ -167,7 +173,7 @@ for the feature's domain terms; `deep` = + dependency manifests, tests, and
 | 2 | Explore brief / recap in this conversation | Intent, non-goals, rejected options, stated limits |
 | 3 | Feature tree: `spec.md`, `plan.md`, `research.md`, `data-model.md`, `contracts/`, `tasks.md`, `checklists/` | Scope, requirements, tradeoffs already made |
 | 4 | `$DECISIONS/DR-*.md` + ledger | Prior choices, Revisit Triggers — never re-decide an Accepted DR silently |
-| 5 | Repo and agent guidance (`AGENTS.md`, agent instruction files, `README`, `CONTRIBUTING`, `docs/`), `auto.context_sources`, `platform_routing` + project ADR log | Conventions, helpers, limits, platform rules |
+| 5 | Repo and agent guidance (`AGENTS.md`, agent instruction files, `README`, `CONTRIBUTING`, `docs/`), `autopilot.context_sources`, `platform_routing` + project ADR log | Conventions, helpers, limits, platform rules |
 | 6 | Codebase (read-only search) | Existing helpers, patterns, APIs, tests — `file:line` evidence, reuse over reinvention |
 | 7 | Runtime | Platform, available scripts and tools, Spec Kit version — what this run can actually do |
 
@@ -177,7 +183,7 @@ Tag each pack item with a type, a source, and a strength (`evidenced` ·
 | Type | Meaning | Use |
 |---|---|---|
 | Constraint | Constitution MUST, platform rule | Violations stop the run (Step 2) |
-| Restriction | User or system limit ("no new branch", no network) | Shrinks the pipeline; auto never exceeds it |
+| Restriction | User or system limit ("no new branch", no network) | Shrinks the pipeline; autopilot never exceeds it |
 | Intent | Goal, non-goals, ruled-out options | Specify input; tie-breaker for recommendations |
 | Knowledge | Helpers, patterns, prior DRs, docs | Evidence for decisions and plan |
 | Assumption | Inferred, unverified | Listed in the report; never the sole basis of a DR |
@@ -191,7 +197,7 @@ Tag each pack item with a type, a source, and a strength (`evidenced` ·
 | `Sparse` | No constitution and no code or doc evidence for the area (typical greenfield) |
 
 Missing sources are recorded as `none found`, never guessed. With
-`auto.require_constitution: true` and no constitution, stop — `BLOCKED`.
+`autopilot.require_constitution: true` and no constitution, stop — `BLOCKED`.
 Re-sweep the delta after specify and after plan (new artifacts only).
 
 ---
@@ -208,9 +214,42 @@ A Change input that **names** the decision it replaces ("change DR-004 to
 …") is not a contradiction: route it to Step 7's decision-change intake,
 whose confirmation gate holds every dependent edit. A conflict nobody named
 stops the run; the report suggests stating it as a change
-(`__SPECKIT_COMMAND_DELIBERATE_AUTO__ change DR-NNN to …`).
+(`__SPECKIT_COMMAND_DELIBERATE_AUTOPILOT__ change DR-NNN to …`).
 
-Otherwise continue. Auto never resolves a contradiction by picking a side.
+Otherwise continue. Autopilot never resolves a contradiction by picking a side.
+
+---
+
+## Preview — plan without writing
+
+When the input says `preview` or `dry run`: run Steps 0–2, then stop. Write
+nothing — no artifact, no DR, no ledger row, no `REPORT` section, no
+`.specify/feature.json` change. Run only the read-only `--paths-only` script
+(no stage commands, no triage pass, no subagents).
+
+Emit one block, then wait:
+
+```markdown
+**Preview — <feature or greenfield>** · mode: initial|iterate · tier: Rich|Partial|Sparse
+**Gate:** clear | BLOCKED — <both sides of the conflict>
+
+| Stage | Would do | Why |
+|---|---|---|
+| specify | skip (spec exists) / generate | … |
+| clarify | run | always runs |
+| plan | generate / revise <sections> / not run: <reason> | … |
+| tasks | … | … |
+| analyze + triage | run / not run: out of range / triage skipped | analyze runs when in range and `tasks.md` exists; triage runs unless skipped |
+
+**Writes if run:** files under FEATURE_DIR · DR files: none written on autopilot's own judgment under `queue`; `accept-evidenced` allows evidenced, supersede-nothing DRs · a Change with an `approve PD-N` / `approve DR-NNN` would write or flip that DR once it passes Step 7's re-check (the user's message is the approval, even under `queue`) · report: `<REPORT>`
+**Known pending (from the last run / sweep):** PD-N and open items, or `none`
+**Iterate intake (if a Change was given):** what it would supersede or approve, with the confirmation gate that would hold
+
+To run for real: `__SPECKIT_COMMAND_DELIBERATE_AUTOPILOT__` with the same input, without `preview`.
+```
+
+Preview only reports what Steps 0–2 can know; do not predict clarify answers,
+analyze findings, or the verdict.
 
 ---
 
@@ -234,8 +273,8 @@ asking the user.
      `evidence_rule`. For DR-worthy choices, draft it through
      `__SPECKIT_COMMAND_DELIBERATE_RECORD__` in `propose-only` mode (no
      writes).
-   - **Defaulted** — no evidence, rank ≤ `auto.defaultable_max_rank`, not
-     non-defaultable, and `auto.default_policy` is not `stop`.
+   - **Defaulted** — no evidence, rank ≤ `autopilot.defaultable_max_rank`, not
+     non-defaultable, and `autopilot.default_policy` is not `stop`.
    - **Open** — neither.
 4. **Write by authority:**
 
@@ -246,10 +285,10 @@ asking the user.
 | Open | Leave or add `[NEEDS CLARIFICATION: …]` → pending | Queued — no write |
 | Supersedes an Accepted DR | — | Queue the draft as a `PD-N` with record's Step 4 plan; dependent edits blocked until confirmed (Step 7) |
 
-**Approval** comes only from the user: `auto.approval: accept-evidenced`
+**Approval** comes only from the user: `autopilot.approval: accept-evidenced`
 (standing approval for new feature-local DRs that meet the evidence bar and
 supersede nothing), "just write it" in this run's input, or an explicit
-in-thread choice of that option. `queue` (default) writes no DR on auto's
+in-thread choice of that option. `queue` (default) writes no DR on autopilot's
 judgment.
 
 **Queued** decisions live only in the report's Pending decisions, with the
@@ -295,15 +334,35 @@ a question, answer through Step 3 instead; open items stay as markers.
 | 3 | plan | `__SPECKIT_COMMAND_PLAN__` | Spec + pack constraints and knowledge | Plan artifacts exist; its Constitution Check passes |
 | 4 | tasks | `__SPECKIT_COMMAND_TASKS__` | Plan artifacts | `tasks.md` exists; no pending P0 blocks tasks |
 | 5 | analyze | `__SPECKIT_COMMAND_ANALYZE__` | Whole feature tree | Step 6 loop |
-| 6 | triage pass | `__SPECKIT_COMMAND_DELIBERATE_TRIAGE__` | `all full` | Step 8 merge, then verdict |
+| 6 | triage pass | `__SPECKIT_COMMAND_DELIBERATE_TRIAGE__` | `all full` | Step 8 merge, then verdict; skipped when `autopilot.triage_pass: false` or the input says `skip triage` |
 
 **Adopting an existing feature:** a stage whose artifact exists reports
 `skipped (exists)` unless Step 5 or iterate intake names an affected
-section — then it runs as revise. Clarify, analyze, and the triage pass
-always run.
+section — then it runs as revise. Within the range, clarify and analyze
+always run; the triage pass runs unless skipped (Step 8).
 
 After every stage run the Step 5 detector. Mark a stage `not run: <reason>`
 when a pending P0, an awaited ADR handoff, or a gate blocks it.
+
+### Stage range
+
+`Range` limits which stages run. Steps 0–3 (resolve, sweep, gate, protocol)
+always run, and a range never widens an approval.
+
+| Input | Effect |
+|---|---|
+| `until X` / `through X` | Run stages 1..X; later stages are `not run: out of range` |
+| `from X` | Stages before X are `skipped (range)`; their artifacts must already exist (spec for plan, plan artifacts for tasks, `tasks.md` for analyze), else `BLOCKED — range needs <artifact>` |
+| `only X` | `from X` and `until X` together |
+
+Inside the range, the Step 5 detector still fires: a clarify interrupt runs
+even when the clarify stage itself is out of range, and edits stop at the end
+of the range (see Step 5). The clarify stage row runs only when in range.
+Analyze runs only when in range and `tasks.md` exists; Step 6 remediations
+edit only artifacts of in-range stages, and a finding about an out-of-range
+artifact is reported `out of range`. The triage pass is read-only and runs
+regardless of range, unless skipped. If analyze does not run, the verdict is
+never `READY` (Step 8).
 
 ---
 
@@ -329,10 +388,12 @@ pick the resume point:
 2. **Resume at the earliest affected stage** and revise forward through every
    later stage, then analyze. Analyze reports only — re-running it repairs
    nothing.
+   Revisions stop at the end of `Range`: later stages are left untouched and
+   noted `stale: out of range` in the Pipeline table.
 3. Resume at the raising stage only when nothing downstream depends on the
    change.
 
-Each interrupt and its reruns count against `auto.clarify_max_interrupts`. A
+Each interrupt and its reruns count against `autopilot.clarify_max_interrupts`. A
 gap that triggers twice is queued with its rank; when the budget is spent,
 remaining gaps are queued.
 
@@ -344,7 +405,7 @@ Route each analyze finding by its ID and severity:
 
 | Finding | Action |
 |---|---|
-| Mechanical — terminology drift, duplication, broken reference, task ordering, requirement with no task | Edit when `auto.auto_remediate: true`; else report |
+| Mechanical — terminology drift, duplication, broken reference, task ordering, requirement with no task | Edit when `autopilot.auto_remediate: true`; else report |
 | Spec-level ambiguity or underspecified requirement | Step 5 interrupt |
 | Needs a decision | Step 3 |
 | Follows from an Accepted DR | Edit, citing the DR |
@@ -353,7 +414,7 @@ Route each analyze finding by its ID and severity:
 | Platform-scoped | ADR handoff |
 
 Record each applied remediation as finding id → `file:line` → change. Re-run
-analyze; stop when no applicable findings remain, `auto.analyze_max_passes`
+analyze; stop when no applicable findings remain, `autopilot.analyze_max_passes`
 is reached, or only blocked findings remain.
 
 ---
@@ -408,7 +469,7 @@ full` (the path relative to the project root) and the Step 0 override — a
 subagent needs both. `full` because `compact` caps the board per rank. Run
 it in a subagent when the agent supports one; otherwise as an inline,
 read-only pass. Its board, categories, and resolution queue are data for
-this step: its closing capture offer ends the pass, not this run, and auto
+this step: its closing capture offer ends the pass, not this run, and autopilot
 never runs its capture routes.
 
 Confirm the pass triaged `FEATURE_DIR`: its load line and cited sources must
@@ -425,15 +486,16 @@ Merge the board into the pending list (triage does not read `REPORT`):
 | `platform-signal` | Platform handoffs; its stage dependency decides the verdict effect |
 | Triage board id (`P0-1`) | Not stored — board ids are per run |
 
-A default that triage ranks above `auto.defaultable_max_rank` loses its
+A default that triage ranks above `autopilot.defaultable_max_rank` loses its
 default status: keep its `mark_assumed` text in place (never silently
 rewrite it), list it as an open item at triage's rank routed to
 `__SPECKIT_COMMAND_CLARIFY__`, and mark everything built on it in later
 stages `blocked by <gap>` — the verdict treats it as unresolved.
 
-When the pass cannot run, say `triage pass not run` in the verdict line and
-cap the verdict at `READY WITH PENDING DECISIONS` — an untriaged tree is
-never `READY`.
+When the pass cannot run or is skipped (`autopilot.triage_pass: false`, or
+`skip triage` / `no triage` in this run's input), say `triage pass not run`
+with the reason in the verdict line and cap the verdict at
+`READY WITH PENDING DECISIONS` — an untriaged tree is never `READY`.
 
 ### Verdict
 
@@ -442,8 +504,9 @@ Computed from what pending items block, never from queue size:
 | Condition | Verdict | Next |
 |---|---|---|
 | Any pending P0 (decision or open item); a stage not run because of a P0, an awaited ADR handoff, or an unconfirmed supersession; an unresolved CRITICAL finding; a Step 2 gate | `BLOCKED — <head blocker> (blocks X)` | The head blocker's route with its focus hint |
-| No blocker, ≥1 pending P1 (decision, open item, or assumption) | `READY WITH PENDING DECISIONS` | Decisions: `__SPECKIT_COMMAND_DELIBERATE_AUTO__ approve PD-…` / `reject PD-…`; open items: their routes |
-| Only P2 pending, or nothing | `READY` | `__SPECKIT_COMMAND_IMPLEMENT__` (auto never runs it) |
+| No blocker, ≥1 pending P1 (decision, open item, or assumption) | `READY WITH PENDING DECISIONS` | Decisions: `__SPECKIT_COMMAND_DELIBERATE_AUTOPILOT__ approve PD-…` / `reject PD-…`; open items: their routes |
+| Only P2 pending, or nothing, and analyze ran | `READY` | `__SPECKIT_COMMAND_IMPLEMENT__` (autopilot never runs it) |
+| Only P2 pending, or nothing, but analyze did not run (`Range`) | `READY THROUGH <last stage run>` | `__SPECKIT_COMMAND_DELIBERATE_AUTOPILOT__ from <next stage>`; implement is not offered |
 
 Platform handoffs no stage depends on are listed but do not change the
 verdict.
@@ -453,13 +516,13 @@ verdict.
 ## Step 9 — Report
 
 Append one run section to `REPORT` — create the file with a
-`# Auto report — <feature>` heading when absent; never edit earlier runs —
-and emit the same section in chat:
+`# Autopilot report — <feature>` heading when absent; never edit earlier runs —
+and emit it in chat according to `Report`:
 
 ```markdown
 ## Run N — YYYY-MM-DD · initial|iterate
 
-**Verdict:** READY | READY WITH PENDING DECISIONS | BLOCKED — <reason> (blocks X)
+**Verdict:** READY | READY THROUGH <stage> | READY WITH PENDING DECISIONS | BLOCKED — <reason> (blocks X)
 **Context tier:** Rich|Partial|Sparse — found: … · none found: …
 
 ### Pipeline
@@ -519,6 +582,23 @@ in triage's shape (`<slug>[ /<sub-area>], <short question> (<id>, <source>)`).
 The Pipeline table lists the triage pass as its own row (board size, new
 items merged).
 
+**`Report: brief`** (the chat default) prints this digest instead of the full
+section. The file still receives the full run section above, and every
+verification below still runs.
+
+```markdown
+**Run N · initial|iterate — <VERDICT>** (BLOCKED: reason and what it blocks)
+Stages: specify ✓ · clarify ✓ · plan ✓ · tasks ✓ · analyze ✓ (4 remediated, 2 blocked) · triage ✓
+DRs written: 2 · Pending decisions: 3 · Open items: 2 (1 P0) · Assumptions: 4
+Needs you (P0 first, max 3): PD-3 <question> — recommended <option>
+Next: 1. <step from the verdict>
+Full report: <REPORT> → Run N
+```
+
+A stage that was `not run`, a Step 2 gate, or a failed check is always named
+in the digest, never summarized away. `Report: full` prints the whole
+section as the file does.
+
 Before reporting: re-read every written file, grep the ledger row for every
 DR written, confirm every `mark_assumed` tag in the artifacts appears under
 Assumptions, and check the verdict against Step 8.
@@ -529,24 +609,24 @@ Assumptions, and check the verdict against Step 8.
 
 | Command | Difference |
 |---|---|
-| `__SPECKIT_COMMAND_DELIBERATE_EXPLORE__` | **Read-only** divergence — auto starts where explore ends |
-| `__SPECKIT_COMMAND_DELIBERATE_RECORD__` | **Writes** DRs — auto calls it: `propose-only` to verify, write modes per approval |
+| `__SPECKIT_COMMAND_DELIBERATE_EXPLORE__` | **Read-only** divergence — autopilot starts where explore ends |
+| `__SPECKIT_COMMAND_DELIBERATE_RECORD__` | **Writes** DRs — autopilot calls it: `propose-only` to verify, write modes per approval |
 | `__SPECKIT_COMMAND_DELIBERATE_RECAP__` | **Read-only** brief — its decided/open/next feeds iterate mode |
-| `__SPECKIT_COMMAND_DELIBERATE_TRIAGE__` | **Read-only** queue — auto runs it (`all full`) as a separate pass before the verdict and merges its board; provisional ranks use its signals |
-| `__SPECKIT_COMMAND_ANALYZE__` | **Read-only** audit — auto applies only the remediations its rules allow |
-| `__SPECKIT_COMMAND_IMPLEMENT__` | **Writes code** — never run by auto; offered only on `READY` |
+| `__SPECKIT_COMMAND_DELIBERATE_TRIAGE__` | **Read-only** queue — autopilot runs it (`all full`) as a separate pass before the verdict and merges its board; provisional ranks use its signals |
+| `__SPECKIT_COMMAND_ANALYZE__` | **Read-only** audit — autopilot applies only the remediations its rules allow |
+| `__SPECKIT_COMMAND_IMPLEMENT__` | **Writes code** — never run by autopilot; offered only on `READY` |
 
 **Typical flow:**
 
 ```
-__SPECKIT_COMMAND_DELIBERATE_EXPLORE__  →  __SPECKIT_COMMAND_DELIBERATE_AUTO__  →  review report  →  approve / change (auto iterate)  →  __SPECKIT_COMMAND_IMPLEMENT__
+__SPECKIT_COMMAND_DELIBERATE_EXPLORE__  →  __SPECKIT_COMMAND_DELIBERATE_AUTOPILOT__  →  review report  →  approve / change (autopilot iterate)  →  __SPECKIT_COMMAND_IMPLEMENT__
 ```
 
 ---
 
 ## Related
 
-- Auto-mode guide: `.specify/extensions/deliberate/docs/auto-mode.md` — lifecycle, config keys, report file
+- Autopilot guide: `.specify/extensions/deliberate/docs/autopilot.md` — lifecycle, config keys, report file
 - Routing reference: `.specify/extensions/deliberate/docs/routing.md` — DR vs ADR vs SKIP plus the platform firewall
 - Ledger reference: `.specify/extensions/deliberate/docs/ledger.md` — row statuses and supersession edits
 - Template checklist: `.specify/extensions/deliberate/docs/template-checklist.md` — required DR sections and hard fails

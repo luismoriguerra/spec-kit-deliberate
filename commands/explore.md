@@ -43,7 +43,7 @@ insensitive; partial match is fine):
 | Record a decision | `__SPECKIT_COMMAND_DELIBERATE_RECORD__` |
 | Generate plan/tasks | `__SPECKIT_COMMAND_PLAN__` / `__SPECKIT_COMMAND_TASKS__` |
 | Implement code | `__SPECKIT_COMMAND_IMPLEMENT__` |
-| Run the whole pipeline | `__SPECKIT_COMMAND_DELIBERATE_AUTO__` |
+| Run the whole pipeline | `__SPECKIT_COMMAND_DELIBERATE_AUTOPILOT__` |
 
 ## Hard guardrails (non-negotiable)
 
@@ -208,7 +208,7 @@ No required ending. When things crystallize, you **may** offer:
 - Update spec → `__SPECKIT_COMMAND_CLARIFY__`
 - Record decision → `__SPECKIT_COMMAND_DELIBERATE_RECORD__`
 - Plan implementation → `__SPECKIT_COMMAND_PLAN__`
-- Run the whole pipeline (specify → analyze) → `__SPECKIT_COMMAND_DELIBERATE_AUTO__`
+- Run the whole pipeline (specify → analyze) → `__SPECKIT_COMMAND_DELIBERATE_AUTOPILOT__`
 - Keep exploring → continue this thread
 ```
 
@@ -225,7 +225,7 @@ The summary is optional. Sometimes thinking **is** the deliverable.
 | `__SPECKIT_COMMAND_DELIBERATE_RECORD__` | **Writes** DR files — use after a decision is chosen |
 | `__SPECKIT_COMMAND_DELIBERATE_RECAP__` | **Read-only** convergent status brief — use to summarize decided/open/next |
 | `__SPECKIT_COMMAND_DELIBERATE_TRIAGE__` | **Read-only** uncertainty queue — use to rank gaps by impact/category |
-| `__SPECKIT_COMMAND_DELIBERATE_AUTO__` | **Writes** — gated specify → clarify → plan → tasks → analyze pipeline — use once explore has converged |
+| `__SPECKIT_COMMAND_DELIBERATE_AUTOPILOT__` | **Writes** — gated specify → clarify → plan → tasks → analyze pipeline — use once explore has converged |
 
 **Typical flow:**
 
@@ -241,4 +241,4 @@ __SPECKIT_COMMAND_DELIBERATE_EXPLORE__  →  (user decides)  →  clarify / reco
 - `__SPECKIT_COMMAND_DELIBERATE_RECORD__` — after a decision is chosen
 - `__SPECKIT_COMMAND_DELIBERATE_RECAP__` — to converge the tree into a status brief
 - `__SPECKIT_COMMAND_DELIBERATE_TRIAGE__` — to rank uncertainties before capturing
-- `__SPECKIT_COMMAND_DELIBERATE_AUTO__` — to run the gated pipeline once a direction is chosen
+- `__SPECKIT_COMMAND_DELIBERATE_AUTOPILOT__` — to run the gated pipeline once a direction is chosen

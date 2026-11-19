@@ -23,12 +23,12 @@ platform_routing:
   adr_command: ""
   platform_signals: []
 
-# Auto mode (speckit.deliberate.auto). Every key is optional: a missing block
-# or key takes the default shown here. See docs/auto-mode.md.
-auto:
+# Autopilot (speckit.deliberate.autopilot). Every key is optional: a missing block
+# or key takes the default shown here. See docs/autopilot.md.
+autopilot:
   mode: auto                   # auto (detect) | initial | iterate
   run_specify: true            # false = require an existing spec
-  report_file: auto-report.md  # one run section appended per run, in the feature dir
+  report_file: autopilot-report.md  # one run section appended per run, in the feature dir
   sweep_depth: standard        # quick | standard | deep
   context_sources: []          # extra read-only paths: runbooks, wikis, ADR dirs
   require_constitution: false  # true = BLOCKED when no constitution is found
@@ -39,3 +39,5 @@ auto:
   auto_remediate: true         # false = report remediations without editing
   clarify_max_interrupts: 3    # clarify interrupts per run
   analyze_max_passes: 2        # analyze -> remediate passes per run
+  chat_report: brief           # brief | full — chat digest vs full run section (file always full)
+  triage_pass: true            # false = skip Step 8's triage pass (verdict capped at READY WITH PENDING DECISIONS)
