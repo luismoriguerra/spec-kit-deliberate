@@ -24,7 +24,7 @@ record, one that drives the flow:
   and reports whether the spec is ready for review. Iterate runs reconcile
   every document after a changed decision.
 
-**Version:** 0.5.1 · **Requires:** spec-kit ≥ 1.0.0 · **License:** MIT
+**Version:** 0.5.2 · **Requires:** spec-kit ≥ 1.0.0 · **License:** MIT
 **Provides:** 5 commands, 1 template · **Hooks:** none in v1
 
 ---
@@ -100,7 +100,7 @@ Pre-catalog (from the tagged release asset):
 
 ```bash
 cd /path/to/consumer-spec-kit-project
-specify extension add deliberate --from https://github.com/luismoriguerra/spec-kit-deliberate/releases/download/v0.5.1/deliberate-v0.5.1.zip
+specify extension add deliberate --from https://github.com/luismoriguerra/spec-kit-deliberate/releases/download/v0.5.2/deliberate-v0.5.2.zip
 # Verify out-of-band: compare sha256sum of the zip with the SHA-256 in the release notes
 ```
 
@@ -116,7 +116,7 @@ Verify:
 
 ```bash
 specify extension list
-# ✓ Deliberate (v0.5.1) — Commands: 5 | Hooks: 0 | Status: Enabled
+# ✓ Deliberate (v0.5.2) — Commands: 5 | Hooks: 0 | Status: Enabled
 ```
 
 On skills-based integrations the commands also appear as agent skills
@@ -140,8 +140,8 @@ From the consumer project's root, reinstall over the existing copy:
 
 ```bash
 cd /path/to/consumer-spec-kit-project
-specify extension add deliberate --force --from https://github.com/luismoriguerra/spec-kit-deliberate/releases/download/v0.5.1/deliberate-v0.5.1.zip
-specify extension list   # ✓ Deliberate (v0.5.1) — Commands: 5
+specify extension add deliberate --force --from https://github.com/luismoriguerra/spec-kit-deliberate/releases/download/v0.5.2/deliberate-v0.5.2.zip
+specify extension list   # ✓ Deliberate (v0.5.2) — Commands: 5
 ```
 
 - `specify extension update deliberate` only works once deliberate is in an

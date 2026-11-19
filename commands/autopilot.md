@@ -443,8 +443,10 @@ stated, ask once.
 **Range preflight.** When `Range` is set, an approval that unblocks edits or
 confirms a supersession is checked **before** any write: trace its impact
 (below) read-only first. If reconciliation would edit an artifact of an
-out-of-range stage, or its analyze check is out of range, write nothing — no
-DR, no ledger row, no edit. The item stays pending (`PD-N`, or the existing
+out-of-range stage, or its analyze check is out of range, write nothing to the
+tree — no DR, no ledger row, no edit; only the Step 9 run section is still
+appended to `REPORT` (it records the block and consumes a Run number). The
+item stays pending (`PD-N`, or the existing
 Proposed `DR-NNN`) and the run ends `BLOCKED — range too narrow for <PD-N>:
 needs <wider range, e.g. through analyze>`, listing the out-of-range
 artifacts it would touch. Never apply a partial reconciliation and never
@@ -521,6 +523,11 @@ Computed from what pending items block, never from queue size:
 | No blocker, ≥1 pending P1 (decision, open item, or assumption) | `READY WITH PENDING DECISIONS` | Decisions: `__SPECKIT_COMMAND_DELIBERATE_AUTOPILOT__ approve PD-…` / `reject PD-…`; open items: their routes |
 | Only P2 pending, or nothing, and analyze ran | `READY` | `__SPECKIT_COMMAND_IMPLEMENT__` (autopilot never runs it) |
 | Only P2 pending, or nothing, but analyze did not run (`Range`) | `READY THROUGH <last stage run>` | `__SPECKIT_COMMAND_DELIBERATE_AUTOPILOT__ from <next stage>`; implement is not offered |
+
+Rows apply top-down, first match wins: a pending P1 gives `READY WITH PENDING
+DECISIONS` even when `Range` kept analyze from running; `READY THROUGH`
+applies only when nothing P1 or higher is pending. Either way, `READY` and
+offering implement require analyze to have run.
 
 Platform handoffs no stage depends on are listed but do not change the
 verdict.
@@ -602,9 +609,9 @@ verification below still runs.
 
 ```markdown
 **Run N · initial|iterate — <VERDICT>** (BLOCKED: reason and what it blocks)
-Stages: specify ✓ · clarify ✓ · plan ✓ · tasks ✓ · analyze ✓ (4 remediated, 2 blocked) · triage ✓
+Stages: specify ✓ · clarify – · plan – · tasks ✓ · analyze ✗ out of range · triage ✓ (✓ done · – skipped by range · ✗ not run, with the reason)
 DRs written: 2 · Pending decisions: 3 · Open items: 2 (1 P0) · Assumptions: 4
-Needs you (P0 first, max 3): PD-3 <question> — recommended <option>
+Needs you (P0 first, max 3): PD-3 <question> — recommended <option> · or, with no pending decisions, the top open items with their routes
 Next: 1. <step from the verdict>
 Full report: <REPORT> → Run N
 ```
