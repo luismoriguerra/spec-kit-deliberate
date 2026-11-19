@@ -5,7 +5,7 @@ schema_version: "1.0"
 extension:
   id: deliberate
   name: Deliberate
-  version: 0.5.0
+  version: 0.5.1
   description: Exploration, decision records, status, triage, and a gated autopilot pipeline for Spec Kit
   author: luismoriguerra
   repository: https://github.com/luismoriguerra/spec-kit-deliberate
