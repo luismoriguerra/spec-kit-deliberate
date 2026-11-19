@@ -437,6 +437,17 @@ Change input.
 Never invent a change. When recap's open items suggest one the user has not
 stated, ask once.
 
+**Range preflight.** When `Range` is set, an approval that unblocks edits or
+confirms a supersession is checked **before** any write: trace its impact
+(below) read-only first. If reconciliation would edit an artifact of an
+out-of-range stage, or its analyze check is out of range, write nothing — no
+DR, no ledger row, no edit. The item stays pending (`PD-N`, or the existing
+Proposed `DR-NNN`) and the run ends `BLOCKED — range too narrow for <PD-N>:
+needs <wider range, e.g. through analyze>`, listing the out-of-range
+artifacts it would touch. Never apply a partial reconciliation and never
+mark one `Reconciled`. A Requirement change follows Step 5's range bound
+instead.
+
 ### Impact graph and reconciliation
 
 Trace the old decision by **reference** (DR id, slug, FR/SC ids) and by

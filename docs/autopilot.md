@@ -111,6 +111,11 @@ still fire inside the range, but edits stop at its end. If analyze does not
 run, the verdict is `READY THROUGH <stage>` — never `READY` — and the next
 step is `autopilot from <next stage>`.
 
+A range never lets a decision be half-applied: if approving or superseding a
+decision would edit an artifact beyond the range (or needs the analyze
+check), autopilot writes nothing, leaves it pending, and names the wider
+range it needs.
+
 ## Configuration
 
 All keys are optional; a config from an older version works unchanged.
