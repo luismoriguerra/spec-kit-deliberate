@@ -6,6 +6,18 @@ All notable changes to this project are documented here. Format follows
 
 ## [Unreleased]
 
+## [0.5.2] - 2026-11-19
+
+### Fixed
+
+- autopilot: a range-preflight block still appends its run section to the
+  report (consuming a Run number) while writing nothing else; verdict rows
+  apply top-down, so a pending P1 outranks `READY THROUGH`; the brief digest
+  defines marks for skipped and out-of-range stages and lists top open items
+  under "Needs you" when no decision is pending. Found by running the
+  installed skills against scratch features. 0.5.0 and 0.5.1 were never
+  published; install 0.5.2.
+
 ## [0.5.1] - 2026-11-19
 
 ### Fixed
